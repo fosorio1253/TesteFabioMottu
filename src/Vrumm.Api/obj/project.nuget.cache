@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "TMUVviKL1Cc=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Fosorio\\source\\repos\\fosorio1253\\TesteFabioMottu\\src\\Vrumm.Api\\Vrumm.Api.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Fosorio\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.4\\microsoft.aspnetcore.openapi.9.0.4.nupkg.sha512",
+    "C:\\Users\\Fosorio\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
