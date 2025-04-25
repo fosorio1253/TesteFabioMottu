@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Vrumm.Domain\Vrumm.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
