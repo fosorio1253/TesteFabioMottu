@@ -28,7 +28,6 @@ public class PlanConfiguration : IEntityTypeConfiguration<Plan>
         builder.Property(p => p.UpdateDate)
             .IsRequired();
 
-        // Seed data para os planos pré-definidos
         builder.HasData(
             Plan.CreateSevenDayPlan(),
             Plan.CreateFifteenDayPlan(),

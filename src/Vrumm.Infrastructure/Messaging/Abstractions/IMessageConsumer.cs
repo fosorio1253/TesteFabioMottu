@@ -2,6 +2,6 @@
 public interface IMessageConsumer
 {
     Task SubscribeAsync<T>(string topic, Func<T, Task> handler) where T : class;
-    Task StartAsync();
-    Task StopAsync();
+    Task StartAsync(CancellationToken cancellationToken);
+    Task StopAsync(CancellationToken cancellationToken);
 }

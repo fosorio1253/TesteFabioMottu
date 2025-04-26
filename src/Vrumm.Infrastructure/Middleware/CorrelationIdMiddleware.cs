@@ -22,14 +22,12 @@ public class CorrelationIdMiddleware
 
         var correlationId = GetOrCreateCorrelationId(context);
 
-        // Add or update the correlation ID in the response headers
         context.Response.OnStarting(() =>
         {
             context.Response.Headers.Add(CorrelationIdHeaderName, new[] { correlationId });
             return Task.CompletedTask;
         });
 
-        // Add correlation ID to log context
         using (_logger.BeginScope("{CorrelationId}", correlationId))
         {
             _logger.LogInformation("Request {Method} {Path} started", context.Request.Method, context.Request.Path);

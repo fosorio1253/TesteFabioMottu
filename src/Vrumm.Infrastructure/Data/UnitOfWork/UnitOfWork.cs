@@ -46,7 +46,7 @@ public class UnitOfWork : IUnitOfWork
         }
         finally
         {
-            await _transaction?.DisposeAsync();
+            _transaction?.Dispose();
             _transaction = null;
         }
     }
@@ -59,7 +59,7 @@ public class UnitOfWork : IUnitOfWork
         }
         finally
         {
-            await _transaction?.DisposeAsync();
+            _transaction?.Dispose();
             _transaction = null;
         }
     }

@@ -41,7 +41,6 @@ public class RentalConfiguration : IEntityTypeConfiguration<Rental>
         builder.Property(r => r.UpdateDate)
             .IsRequired();
 
-        // Relacionamentos
         builder.HasOne<Motorcycle>()
             .WithMany()
             .HasForeignKey(r => r.MotorcycleId)

@@ -2,6 +2,7 @@
 using Vrumm.Domain.Commom.Enums;
 using Vrumm.Domain.Commom.Exceptions;
 using Vrumm.Domain.Commom;
+using Vrumm.Domain.Events;
 
 namespace Vrumm.Domain.Entities;
 public class Motorcycle : Entity<Guid>

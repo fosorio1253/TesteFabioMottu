@@ -54,17 +54,14 @@ public class GlobalExceptionHandlingMiddleware
     {
         return exception switch
         {
-            // Domain exceptions
-            DomainException _ => (HttpStatusCode.BadRequest, exception.Message),
             InvalidLicensePlateException _ => (HttpStatusCode.BadRequest, exception.Message),
             MotorcycleNotAvailableException _ => (HttpStatusCode.Conflict, exception.Message),
             InvalidDriverLicenseException _ => (HttpStatusCode.BadRequest, exception.Message),
+            DomainException _ => (HttpStatusCode.BadRequest, exception.Message),
 
-            // Framework exceptions
             ArgumentException _ => (HttpStatusCode.BadRequest, exception.Message),
             InvalidOperationException _ => (HttpStatusCode.BadRequest, exception.Message),
 
-            // Default case
             _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred. Please try again later.")
         };
     }

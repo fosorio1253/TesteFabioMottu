@@ -1,6 +1,7 @@
 ﻿using Vrumm.Domain.Commom.Enums;
 using Vrumm.Domain.Commom.Exceptions;
 using Vrumm.Domain.Commom;
+using Vrumm.Domain.Events;
 
 namespace Vrumm.Domain.Entities;
 public class Rental : Entity<Guid>
@@ -44,9 +45,11 @@ public class Rental : Entity<Guid>
         if (Status != RentalStatus.Active)
             throw new DomainException("Não é possível calcular valor para uma locação não ativa");
 
+        if (returnDate.Date == ExpectedEndDate.Date)
+            return plan.CalculateTotalValue();
+
         var actualDays = (int)(returnDate.Date - StartDate.Date).TotalDays + 1;
 
-        // Devolução antes do prazo
         if (returnDate.Date < ExpectedEndDate.Date)
         {
             var baseValue = actualDays * plan.DailyRate;
@@ -54,13 +57,6 @@ public class Rental : Entity<Guid>
             return baseValue + penalty;
         }
 
-        // Devolução no prazo
-        if (returnDate.Date == ExpectedEndDate.Date)
-        {
-            return plan.CalculateTotalValue();
-        }
-
-        // Devolução com atraso
         var extraDays = (int)(returnDate.Date - ExpectedEndDate.Date).TotalDays;
         var normalValue = plan.CalculateTotalValue();
         var additionalValue = plan.CalculateAdditionalDaysValue(extraDays);
