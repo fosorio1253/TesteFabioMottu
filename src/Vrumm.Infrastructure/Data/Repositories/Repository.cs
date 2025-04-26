@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using Vrumm.Domain.Commom;
+using Vrumm.Domain.Common;
 using Vrumm.Domain.Repositories;
 using Vrumm.Infrastructure.Data.Context;
 

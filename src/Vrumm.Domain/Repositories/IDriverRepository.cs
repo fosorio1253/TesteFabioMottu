@@ -1,4 +1,4 @@
-﻿using Vrumm.Domain.Commom.Enums;
+﻿using Vrumm.Domain.Common.Enums;
 using Vrumm.Domain.Entities;
 
 namespace Vrumm.Domain.Repositories;

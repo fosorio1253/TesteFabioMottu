@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Vrumm.Domain.Commom.Enums;
+using Vrumm.Domain.Common.Enums;
 using Vrumm.Domain.Entities;
 using Vrumm.Domain.Repositories;
 using Vrumm.Infrastructure.Data.Context;

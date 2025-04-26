@@ -1,4 +1,4 @@
-﻿namespace Vrumm.Domain.Commom;
+﻿namespace Vrumm.Domain.Common;
 public abstract class Entity<TId>
 {
     public TId Id { get; protected set; }

@@ -1,4 +1,4 @@
-﻿namespace Vrumm.Domain.Commom.Enums;
+﻿namespace Vrumm.Domain.Common.Enums;
 public enum MotorcycleStatus
 {
     Available = 0,

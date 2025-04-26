@@ -1,4 +1,4 @@
-﻿using Vrumm.Domain.Commom;
+﻿using Vrumm.Domain.Common;
 
 namespace Vrumm.Domain.Events;
 public class MotorcycleRegistered : DomainEvent

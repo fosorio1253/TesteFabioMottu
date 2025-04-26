@@ -1,5 +1,5 @@
-﻿using Vrumm.Domain.Commom.Exceptions;
-using Vrumm.Domain.Commom;
+﻿using Vrumm.Domain.Common;
+using Vrumm.Domain.Common.Exceptions;
 
 namespace Vrumm.Domain.Entities;
 public class Plan : Entity<int>

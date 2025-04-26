@@ -1,4 +1,4 @@
-﻿using Vrumm.Domain.Commom;
+﻿using Vrumm.Domain.Common;
 
 namespace Vrumm.Infrastructure.Messaging.Abstractions;
 public interface IMessagePublisher

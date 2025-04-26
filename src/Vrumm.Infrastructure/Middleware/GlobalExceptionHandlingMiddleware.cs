@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
-using Vrumm.Domain.Commom.Exceptions;
+using Vrumm.Domain.Common.Exceptions;
 
 namespace Vrumm.Infrastructure.Middleware;
 public class GlobalExceptionHandlingMiddleware

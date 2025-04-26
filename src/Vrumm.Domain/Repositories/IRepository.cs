@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using Vrumm.Domain.Commom;
+using Vrumm.Domain.Common;
 
 namespace Vrumm.Domain.Repositories;
 public interface IRepository<T, TId> where T : Entity<TId>

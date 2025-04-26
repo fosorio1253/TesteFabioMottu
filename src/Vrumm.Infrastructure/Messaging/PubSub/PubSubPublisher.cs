@@ -3,7 +3,7 @@ using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Vrumm.Domain.Commom;
+using Vrumm.Domain.Common;
 using Vrumm.Infrastructure.Dependency.Configurations;
 using Vrumm.Infrastructure.Messaging.Abstractions;
 
