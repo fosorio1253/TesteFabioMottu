@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Vrumm.Infrastructure.Storage.Abstractions;
-using Vrumm.Infrastructure.Storage.Cloud;
+using Vrumm.Infrastructure.Storage.GoogleCloud;
 
 namespace Vrumm.Infrastructure.Dependency;
 public static class StorageDependencyInjection
@@ -11,9 +11,9 @@ public static class StorageDependencyInjection
         var storageOptions = new StorageOptions();
         configureOptions?.Invoke(storageOptions);
         
-        services.AddSingleton<IStorageService, CloudStorageService>();
+        services.AddSingleton<IStorageService, GoogleCloudStorageService>();
 
-        hcBuilder.AddCheck<GcsHealthCheck>(
+        hcBuilder.AddCheck<GoogleCloudStorageHealthCheck>(
             storageOptions.GoogleCloudStorage.Name,
             tags: storageOptions.GoogleCloudStorage.Tags);
 

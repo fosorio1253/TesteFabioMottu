@@ -3,13 +3,13 @@ using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
 using Vrumm.Infrastructure.Storage.Abstractions;
 
-namespace Vrumm.Infrastructure.Storage.Cloud;
-public class CloudStorageService : IStorageService
+namespace Vrumm.Infrastructure.Storage.GoogleCloud;
+public class GoogleCloudStorageService : IStorageService
 {
-    private readonly ILogger<CloudStorageService> _logger;
+    private readonly ILogger<GoogleCloudStorageService> _logger;
     private readonly StorageClient _storageClient;
 
-    public CloudStorageService(ILogger<CloudStorageService> logger)
+    public GoogleCloudStorageService(ILogger<GoogleCloudStorageService> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _storageClient = StorageClient.Create();

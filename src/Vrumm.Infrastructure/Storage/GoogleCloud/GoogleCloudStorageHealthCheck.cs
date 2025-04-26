@@ -4,13 +4,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Vrumm.Infrastructure.Dependency.Configurations;
 
-namespace Vrumm.Infrastructure.Storage.Cloud;
-public class GcsHealthCheck : IHealthCheck
+namespace Vrumm.Infrastructure.Storage.GoogleCloud;
+public class GoogleCloudStorageHealthCheck : IHealthCheck
 {
     private readonly GoogleCloudOptions _options;
-    private readonly ILogger<GcsHealthCheck> _logger;
+    private readonly ILogger<GoogleCloudStorageHealthCheck> _logger;
 
-    public GcsHealthCheck(IOptions<GoogleCloudOptions> options, ILogger<GcsHealthCheck> logger)
+    public GoogleCloudStorageHealthCheck(IOptions<GoogleCloudOptions> options, ILogger<GoogleCloudStorageHealthCheck> logger)
     {
         _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
