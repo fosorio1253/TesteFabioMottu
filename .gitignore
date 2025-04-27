@@ -5,3 +5,10 @@
 /.vs
 /src/.vs
 /src/Vrumm.Infrastructure/bin/Debug/net9.0
+/src/Vrumm.Api/bin/Debug/net9.0
+/src/Vrumm.Application/bin/Debug/net9.0
+/src/Vrumm.Domain/bin/Debug/net9.0
+/src/Vrumm.Domain/obj/Debug/net9.0/ref
+/src/Vrumm.Domain/obj/Debug/net9.0/refint
+/src/Vrumm.Infrastructure/obj/Debug/net9.0/ref
+/src/Vrumm.Infrastructure/obj/Debug/net9.0/refint

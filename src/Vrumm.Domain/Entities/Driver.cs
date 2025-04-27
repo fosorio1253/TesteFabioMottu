@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Data;
+using System.Text.RegularExpressions;
 using Vrumm.Domain.Common;
 using Vrumm.Domain.Common.Enums;
 using Vrumm.Domain.Exceptions;
@@ -80,5 +81,17 @@ public class Driver : Entity<Guid>
     public bool CanRentMotorcycle()
     {
         return LicenseType == LicenseType.A || LicenseType == LicenseType.AB;
+    }
+
+    public void Update(string name, string taxId, DateTime birthDate, string licenseNumber, LicenseType licenseType)
+    {
+        ValidateTaxId(taxId);
+        ValidateBirthDate(birthDate);
+        ValidateLicenseNumber(licenseNumber);
+        Name = name;
+        TaxId = taxId;
+        BirthDate = birthDate;
+        LicenseNumber = licenseNumber;
+        LicenseType = licenseType;
     }
 }
