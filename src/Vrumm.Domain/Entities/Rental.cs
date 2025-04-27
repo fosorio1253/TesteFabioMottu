@@ -1,7 +1,7 @@
 ﻿using Vrumm.Domain.Common;
 using Vrumm.Domain.Common.Enums;
-using Vrumm.Domain.Common.Exceptions;
 using Vrumm.Domain.Events;
+using Vrumm.Domain.Exceptions;
 
 namespace Vrumm.Domain.Entities;
 public class Rental : Entity<Guid>

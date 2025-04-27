@@ -15,7 +15,7 @@ public class GoogleCloudStorageService : IStorageService
         _storageClient = StorageClient.Create();
     }
 
-    public async Task<string> UploadFileAsync(string bucketName, string fileName, Stream content, string contentType)
+    public async Task<string> UploadFileAsync(string bucketName, string fileName, Stream content, string contentType, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(fileName))
             throw new ArgumentException("File name cannot be null or empty", nameof(fileName));
@@ -37,7 +37,8 @@ public class GoogleCloudStorageService : IStorageService
                 objectName: uniqueFileName,
                 contentType: contentType ?? "application/octet-stream",
                 source: content,
-                options: uploadOptions);
+                options: uploadOptions,
+                cancellationToken);
 
             _logger.LogInformation("File {FileName} uploaded to GCS bucket {BucketName} as {ObjectName}",
                 fileName, bucketName, uniqueFileName);
@@ -52,7 +53,7 @@ public class GoogleCloudStorageService : IStorageService
         }
     }
 
-    public async Task<StorageFile> DownloadFileAsync(string bucketName, string filePath)
+    public async Task<StorageFile> DownloadFileAsync(string bucketName, string filePath, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(filePath))
             throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
@@ -61,8 +62,8 @@ public class GoogleCloudStorageService : IStorageService
         {
             var stream = new MemoryStream();
 
-            var obj = await _storageClient.GetObjectAsync(bucketName, filePath);
-            await _storageClient.DownloadObjectAsync(bucketName, filePath, stream);
+            var obj = await _storageClient.GetObjectAsync(bucketName, filePath, cancellationToken: cancellationToken);
+            await _storageClient.DownloadObjectAsync(bucketName, filePath, stream, cancellationToken: cancellationToken);
 
             stream.Position = 0;
 
@@ -79,14 +80,14 @@ public class GoogleCloudStorageService : IStorageService
         }
     }
 
-    public async Task DeleteFileAsync(string bucketName, string filePath)
+    public async Task DeleteFileAsync(string bucketName, string filePath, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(filePath))
             throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
 
         try
         {
-            await _storageClient.DeleteObjectAsync(bucketName, filePath);
+            await _storageClient.DeleteObjectAsync(bucketName, filePath, cancellationToken: cancellationToken);
 
             _logger.LogInformation("File {FilePath} deleted from GCS bucket {BucketName}",
                 filePath, bucketName);
@@ -99,14 +100,14 @@ public class GoogleCloudStorageService : IStorageService
         }
     }
 
-    public async Task<string> GetSignedUrlAsync(string bucketName, string filePath, int expirationMinutes = 60)
+    public async Task<string> GetSignedUrlAsync(string bucketName, string filePath, CancellationToken cancellationToken, int expirationMinutes = 60)
     {
         if (string.IsNullOrEmpty(filePath))
             throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
 
         try
         {
-            var credential = await GoogleCredential.GetApplicationDefaultAsync();
+            var credential = await GoogleCredential.GetApplicationDefaultAsync(cancellationToken: cancellationToken);
             if (credential.UnderlyingCredential is not ServiceAccountCredential serviceAccountCredential)
                 throw new InvalidOperationException("Credentials are not service account credentials");
 

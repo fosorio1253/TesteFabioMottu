@@ -1,8 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using Vrumm.Domain.Common;
 using Vrumm.Domain.Common.Enums;
-using Vrumm.Domain.Common.Exceptions;
 using Vrumm.Domain.Events;
+using Vrumm.Domain.Exceptions;
+using Vrumm.Domain.Exceptions.Motorcycles;
 
 namespace Vrumm.Domain.Entities;
 public class Motorcycle : Entity<Guid>
@@ -90,5 +91,12 @@ public class Motorcycle : Entity<Guid>
     public MotorcycleRegistered GenerateRegisteredEvent()
     {
         return new MotorcycleRegistered(Id, Model, Year, LicensePlate);
+    }
+
+    public void Update(string model, int year, string licensePlate)
+    {
+        Model = model;
+        Year = year;
+        SetLicensePlate(licensePlate);
     }
 }

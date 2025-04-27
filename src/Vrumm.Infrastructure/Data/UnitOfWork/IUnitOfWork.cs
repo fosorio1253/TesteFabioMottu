@@ -8,8 +8,8 @@ public interface IUnitOfWork : IDisposable
     IPlanRepository Plans { get; }
     IRentalRepository Rentals { get; }
 
-    Task<int> SaveChangesAsync();
-    Task BeginTransactionAsync();
-    Task CommitTransactionAsync();
-    Task RollbackTransactionAsync();
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    Task BeginTransactionAsync(CancellationToken cancellationToken);
+    Task CommitTransactionAsync(CancellationToken cancellationToken);
+    Task RollbackTransactionAsync(CancellationToken cancellationToken);
 }

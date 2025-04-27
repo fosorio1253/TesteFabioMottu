@@ -11,33 +11,38 @@ public class DriverRepository : Repository<Driver, Guid>, IDriverRepository
     {
     }
 
-    public async Task<bool> ExistsByTaxIdAsync(string taxId)
+    public async Task<bool> ExistsByTaxIdAsync(string taxId, CancellationToken cancellationToken)
     {
-        return await _dbSet.AnyAsync(d => d.TaxId == taxId);
+        return await _dbSet.AnyAsync(d => d.TaxId == taxId, cancellationToken: cancellationToken);
     }
 
-    public async Task<bool> ExistsByLicenseNumberAsync(string licenseNumber)
+    public async Task<bool> ExistsByLicenseNumberAsync(string licenseNumber, CancellationToken cancellationToken)
     {
-        return await _dbSet.AnyAsync(d => d.LicenseNumber == licenseNumber);
+        return await _dbSet.AnyAsync(d => d.LicenseNumber == licenseNumber, cancellationToken: cancellationToken);
     }
 
-    public async Task<bool> ExistsByTaxIdExceptIdAsync(string taxId, Guid id)
+    public async Task<bool> ExistsByTaxIdExceptIdAsync(string taxId, Guid id, CancellationToken cancellationToken)
     {
-        return await _dbSet.AnyAsync(d => d.TaxId == taxId && d.Id != id);
+        return await _dbSet.AnyAsync(d => d.TaxId == taxId && d.Id != id, cancellationToken: cancellationToken);
     }
 
-    public async Task<bool> ExistsByLicenseNumberExceptIdAsync(string licenseNumber, Guid id)
+    public async Task<bool> ExistsByLicenseNumberExceptIdAsync(string licenseNumber, Guid id, CancellationToken cancellationToken)
     {
-        return await _dbSet.AnyAsync(d => d.LicenseNumber == licenseNumber && d.Id != id);
+        return await _dbSet.AnyAsync(d => d.LicenseNumber == licenseNumber && d.Id != id, cancellationToken: cancellationToken);
     }
 
-    public async Task<Driver> GetByTaxIdAsync(string taxId)
+    public async Task<Driver> GetByTaxIdAsync(string taxId, CancellationToken cancellationToken)
     {
-        return await _dbSet.FirstOrDefaultAsync(d => d.TaxId == taxId);
+        return await _dbSet.FirstOrDefaultAsync(d => d.TaxId == taxId, cancellationToken: cancellationToken);
     }
 
-    public async Task<IEnumerable<Driver>> GetByLicenseTypeAsync(LicenseType licenseType)
+    public async Task<IEnumerable<Driver>> GetByLicenseTypeAsync(LicenseType licenseType, CancellationToken cancellationToken)
     {
-        return await _dbSet.Where(d => d.LicenseType == licenseType || d.LicenseType == LicenseType.AB).ToListAsync();
+        return await _dbSet.Where(d => d.LicenseType == licenseType || d.LicenseType == LicenseType.AB).ToListAsync(cancellationToken: cancellationToken);
+    }
+
+    public IQueryable<Driver> GetAll()
+    {
+        return _dbSet.AsQueryable();
     }
 }

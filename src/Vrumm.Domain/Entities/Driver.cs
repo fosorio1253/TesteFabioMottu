@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Vrumm.Domain.Common;
 using Vrumm.Domain.Common.Enums;
-using Vrumm.Domain.Common.Exceptions;
+using Vrumm.Domain.Exceptions;
 
 namespace Vrumm.Domain.Entities;
 public class Driver : Entity<Guid>

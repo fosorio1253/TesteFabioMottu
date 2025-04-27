@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
-using Vrumm.Domain.Common.Exceptions;
+using Vrumm.Domain.Exceptions;
+using Vrumm.Domain.Exceptions.Drivers;
+using Vrumm.Domain.Exceptions.Motorcycles;
 
 namespace Vrumm.Infrastructure.Middleware;
 public class GlobalExceptionHandlingMiddleware

@@ -10,14 +10,19 @@ public class PlanRepository : Repository<Plan, int>, IPlanRepository
     {
     }
 
-    public async Task<IEnumerable<Plan>> GetByDayCountRangeAsync(int minDays, int maxDays)
+    public IQueryable<Plan> GetAll()
     {
-        return await _dbSet.Where(p => p.DayCount >= minDays && p.DayCount <= maxDays).ToListAsync();
+        return _dbSet.AsQueryable<Plan>();
     }
 
-    public async Task SeedDefaultPlansAsync()
+    public async Task<IEnumerable<Plan>> GetByDayCountRangeAsync(int minDays, int maxDays, CancellationToken cancellationToken)
     {
-        if (!await _dbSet.AnyAsync())
+        return await _dbSet.Where(p => p.DayCount >= minDays && p.DayCount <= maxDays).ToListAsync(cancellationToken: cancellationToken);
+    }
+
+    public async Task SeedDefaultPlansAsync(CancellationToken cancellationToken)
+    {
+        if (!await _dbSet.AnyAsync(cancellationToken: cancellationToken))
         {
             await _dbSet.AddRangeAsync(
                 Plan.CreateSevenDayPlan(),

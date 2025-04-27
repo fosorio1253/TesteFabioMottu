@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vrumm.Application\Vrumm.Application.csproj" />
+    <ProjectReference Include="..\Vrumm.Domain\Vrumm.Domain.csproj" />
   </ItemGroup>
 
 </Project>

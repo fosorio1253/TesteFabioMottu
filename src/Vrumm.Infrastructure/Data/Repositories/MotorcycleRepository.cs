@@ -11,23 +11,28 @@ public class MotorcycleRepository : Repository<Motorcycle, Guid>, IMotorcycleRep
     {
     }
 
-    public async Task<bool> ExistsByLicensePlateAsync(string licensePlate)
+    public async Task<bool> ExistsByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken)
     {
-        return await _dbSet.AnyAsync(m => m.LicensePlate == licensePlate);
+        return await _dbSet.AnyAsync(m => m.LicensePlate == licensePlate, cancellationToken: cancellationToken);
     }
 
-    public async Task<bool> ExistsByLicensePlateExceptIdAsync(string licensePlate, Guid id)
+    public async Task<bool> ExistsByLicensePlateExceptIdAsync(string licensePlate, Guid id, CancellationToken cancellationToken)
     {
-        return await _dbSet.AnyAsync(m => m.LicensePlate == licensePlate && m.Id != id);
+        return await _dbSet.AnyAsync(m => m.LicensePlate == licensePlate && m.Id != id, cancellationToken: cancellationToken);
     }
 
-    public async Task<IEnumerable<Motorcycle>> GetByStatusAsync(MotorcycleStatus status)
+    public IQueryable<Motorcycle> GetAll()
     {
-        return await _dbSet.Where(m => m.Status == status).ToListAsync();
+        return _dbSet.AsQueryable<Motorcycle>();
     }
 
-    public async Task<IEnumerable<Motorcycle>> GetByYearRangeAsync(int startYear, int endYear)
+    public async Task<IEnumerable<Motorcycle>> GetByStatusAsync(MotorcycleStatus status, CancellationToken cancellationToken)
     {
-        return await _dbSet.Where(m => m.Year >= startYear && m.Year <= endYear).ToListAsync();
+        return await _dbSet.Where(m => m.Status == status).ToListAsync(cancellationToken: cancellationToken);
+    }
+
+    public async Task<IEnumerable<Motorcycle>> GetByYearRangeAsync(int startYear, int endYear, CancellationToken cancellationToken)
+    {
+        return await _dbSet.Where(m => m.Year >= startYear && m.Year <= endYear).ToListAsync(cancellationToken: cancellationToken);
     }
 }
