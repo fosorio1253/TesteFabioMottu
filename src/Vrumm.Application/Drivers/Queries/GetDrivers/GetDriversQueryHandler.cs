@@ -6,7 +6,7 @@ using Vrumm.Application.Common.Models;
 using Vrumm.Application.Drivers.Dtos;
 using Vrumm.Application.Drivers.Mappings;
 using Vrumm.Domain.Common.Enums;
-using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.DriverCompose;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Drivers.Queries.GetDrivers;
@@ -33,10 +33,11 @@ public class GetDriversQueryHandler : IQueryHandler<GetDriversQuery, PaginatedLi
             queryable = queryable.Where(d => d.Name.Contains(query.Filter.Name));
 
         if (!string.IsNullOrWhiteSpace(query.Filter.TaxId))
-            queryable = queryable.Where(d => d.TaxId == query.Filter.TaxId);
+            queryable = queryable.Where(d => d.Cnpj.Value == query.Filter.TaxId);
 
         if (!string.IsNullOrWhiteSpace(query.Filter.LicenseType))
-            queryable = queryable.Where(d => d.LicenseType == Enum.Parse<LicenseType>(query.Filter.LicenseType));
+            queryable = queryable.Where(d => d.LicenseType.Value
+            == Enum.Parse<LicenseType>(query.Filter.LicenseType));
 
         queryable = ApplySorting(queryable, query.SortBy, query.SortDescending);
 
@@ -60,7 +61,7 @@ public class GetDriversQueryHandler : IQueryHandler<GetDriversQuery, PaginatedLi
         Expression<Func<Driver, object>> keySelector = sortBy?.ToLower() switch
         {
             "name" => d => d.Name,
-            "taxid" => d => d.TaxId,
+            "taxid" => d => d.Cnpj.Value,
             "birthdate" => d => d.BirthDate,
             "licensenumber" => d => d.LicenseNumber,
             "licensetype" => d => d.LicenseType,

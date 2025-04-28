@@ -21,6 +21,7 @@ public class GetRentalsQueryHandler
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
+
     public async Task<PaginatedList<RentalDto>> Handle(GetRentalsQuery query, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Recuperando locações com filtros: MotorcycleId={MotorcycleId}, DriverId={DriverId}, Status={Status}, StartDateFrom={StartDateFrom}, StartDateTo={StartDateTo}",
@@ -78,10 +79,10 @@ public class GetRentalsQueryHandler
             dto.Motorcycle = motorcycle != null ? new MotorcycleDto
             {
                 Id = motorcycle.Id,
-                Year = motorcycle.Year,
-                Model = motorcycle.Model,
-                LicensePlate = motorcycle.LicensePlate,
-                Status = motorcycle.Status.ToString(),
+                Year = motorcycle.Details().Year().ToInt(),
+                Model = motorcycle.Details().Model().ToStringRepresentation(),
+                LicensePlate = motorcycle.Details().LicensePlate().ToStringRepresentation(),
+                Status = motorcycle.Status().ToStatus().ToString(),
                 CreationDate = motorcycle.CreationDate,
                 UpdateDate = motorcycle.UpdateDate
             } : null;
@@ -90,10 +91,10 @@ public class GetRentalsQueryHandler
             {
                 Id = driver.Id,
                 Name = driver.Name,
-                TaxId = driver.TaxId,
-                BirthDate = driver.BirthDate,
-                LicenseNumber = driver.LicenseNumber,
-                LicenseType = driver.LicenseType.ToString(),
+                TaxId = driver.Cnpj.Value,
+                BirthDate = driver.BirthDate.Value,
+                LicenseNumber = driver.LicenseNumber.Value,
+                LicenseType = driver.LicenseType.Value.ToString(),
                 LicenseImagePath = driver.LicenseImagePath,
                 CreationDate = driver.CreationDate,
                 UpdateDate = driver.UpdateDate

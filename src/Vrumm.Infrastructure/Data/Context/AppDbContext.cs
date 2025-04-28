@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.MotorcycleCompose;
+using Vrumm.Domain.Entities.DriverCompose;
 
 namespace Vrumm.Infrastructure.Data.Context;
 public class VrummDbContext : DbContext
@@ -10,6 +12,7 @@ public class VrummDbContext : DbContext
     public DbSet<Driver> Drivers { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Rental> Rentals { get; set; }
+    public DbSet<MotorcycleRegistrationEvent> MotorcycleRegistrationEvents { get; set; }
 
     public VrummDbContext(DbContextOptions<VrummDbContext> options)
         : base(options)

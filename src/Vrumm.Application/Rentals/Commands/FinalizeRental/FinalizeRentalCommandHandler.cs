@@ -59,7 +59,7 @@ public class FinalizeRentalCommandHandler
 
         rental.FinalizeRental(command.ReturnDate, totalValue);
 
-        motorcycle.ReturnMotorcycle();
+        motorcycle.Return();
 
         await _unitOfWork.Rentals.UpdateAsync(rental);
         await _unitOfWork.Motorcycles.UpdateAsync(motorcycle);

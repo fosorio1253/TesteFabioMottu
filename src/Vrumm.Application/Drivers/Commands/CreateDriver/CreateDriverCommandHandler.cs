@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
 using Vrumm.Application.Common.Interfaces;
-using Vrumm.Domain.Common.Enums;
+using Vrumm.Domain.Common;
 using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.DriverCompose;
+using Vrumm.Domain.Exceptions;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Drivers.Commands.CreateDriver;
@@ -21,20 +23,29 @@ public class CreateDriverCommandHandler : ICommandHandler<CreateDriverCommand, G
 
     public async Task<Guid> Handle(CreateDriverCommand command, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating driver with Tax ID {TaxId}", command.TaxId);
+        _logger.LogInformation("Creating driver with CNPJ {Cnpj}", command.Cnpj);
 
-        if (await _unitOfWork.Drivers.ExistsByTaxIdAsync(command.TaxId, cancellationToken))
+        var cnpj = Cnpj.Create(command.Cnpj);
+        var licenseNumber = LicenseNumber.Create(command.LicenseNumber);
+
+        if (await _unitOfWork.Drivers.ExistsByCnpjAsync(cnpj, cancellationToken))
         {
-            _logger.LogWarning("Driver with Tax ID {TaxId} already exists", command.TaxId);
-            throw new DuplicateTaxIdException(command.TaxId);
+            _logger.LogWarning("Driver with CNPJ {Cnpj} already exists", cnpj.Value);
+            throw new DuplicateCnpjException(cnpj.Value);
+        }
+
+        if (await _unitOfWork.Drivers.ExistsByLicenseNumberAsync(licenseNumber, cancellationToken))
+        {
+            _logger.LogWarning("Driver with LicenseNumber {LicenseNumber} already exists", licenseNumber.Value);
+            throw new DomainException("License number must be unique.");
         }
 
         var driver = new Driver(
             command.Name,
-            command.TaxId,
-            command.BirthDate,
-            command.LicenseNumber,
-            Enum.Parse<LicenseType>(command.LicenseType));
+            cnpj,
+            BirthDate.Create(command.BirthDate),
+            licenseNumber,
+            LicenseTypeValue.Create(command.LicenseType));
 
         await _unitOfWork.Drivers.AddAsync(driver, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
 using Vrumm.Application.Common.Interfaces;
+using Vrumm.Domain.Common;
+using Vrumm.Domain.Entities.DriverCompose;
+using Vrumm.Domain.Exceptions.Drivers;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Drivers.Commands.UpdateDriver;
@@ -25,18 +28,24 @@ public class UpdateDriverCommandHandler : ICommandHandler<UpdateDriverCommand>
         if (driver == null)
             throw new NotFoundException("Entregador", command.Id);
 
-        if (await _unitOfWork.Drivers.ExistsByTaxIdExceptIdAsync(command.TaxId, command.Id, cancellationToken))
-            throw new DuplicateEntityException($"Já existe um entregador com o CPF {command.TaxId}");
+        var cnpj = Cnpj.Create(command.TaxId);
+        var licenseNumber = LicenseNumber.Create(command.LicenseNumber);
 
-        if (await _unitOfWork.Drivers.ExistsByLicenseNumberExceptIdAsync(command.LicenseNumber, command.Id, cancellationToken))
-            throw new DuplicateEntityException($"Já existe um entregador com o número de licença {command.LicenseNumber}");
+        if (await _unitOfWork.Drivers.ExistsByCnpjExceptIdAsync(cnpj, command.Id, cancellationToken))
+            throw new DuplicateDriverException(command.TaxId);
+
+        if (await _unitOfWork.Drivers.ExistsByLicenseNumberExceptIdAsync(licenseNumber, command.Id, cancellationToken))
+            throw new DuplicateLicenseNumberException(command.LicenseNumber);
+
+        var birthDate = BirthDate.Create(command.BirthDate);
+        var licenseType = LicenseTypeValue.Create(command.LicenseType);
 
         driver.Update(
             name: command.Name,
-            taxId: command.TaxId,
-            birthDate: command.BirthDate,
-            licenseNumber: command.LicenseNumber,
-            licenseType: command.LicenseType);
+            cnpj: cnpj,
+            birthDate: birthDate,
+            licenseNumber: licenseNumber,
+            licenseType: licenseType);
 
         await _unitOfWork.Drivers.UpdateAsync(driver);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

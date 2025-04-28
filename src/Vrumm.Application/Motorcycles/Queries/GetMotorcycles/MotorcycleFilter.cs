@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Vrumm.Domain.Common.Enums;
-using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.MotorcycleCompose;
 
 namespace Vrumm.Application.Motorcycles.Queries.GetMotorcycles;
 internal static class MotorcycleFilter
@@ -14,19 +15,19 @@ internal static class MotorcycleFilter
         string licensePlate)
     {
         if (status.HasValue)
-            query = query.Where(m => m.Status == status.Value);
+            query = query.Where(m => EF.Property<MotorcycleStatus>(m, "Status") == status.Value);
 
         if (yearFrom.HasValue)
-            query = query.Where(m => m.Year >= yearFrom.Value);
+            query = query.Where(m => EF.Property<int>(m, "Year") >= yearFrom.Value);
 
         if (yearTo.HasValue)
-            query = query.Where(m => m.Year <= yearTo.Value);
+            query = query.Where(m => EF.Property<int>(m, "Year") <= yearTo.Value);
 
         if (!string.IsNullOrWhiteSpace(model))
-            query = query.Where(m => m.Model.Contains(model));
+            query = query.Where(m => EF.Property<string>(m, "Model").Contains(model));
 
         if (!string.IsNullOrWhiteSpace(licensePlate))
-            query = query.Where(m => m.LicensePlate.Contains(licensePlate));
+            query = query.Where(m => EF.Property<string>(m, "LicensePlate").Contains(licensePlate));
 
         return query;
     }
@@ -35,12 +36,12 @@ internal static class MotorcycleFilter
     {
         Expression<Func<Motorcycle, object>> keySelector = sortBy?.ToLower() switch
         {
-            "year" => m => m.Year,
-            "model" => m => m.Model,
-            "licenseplate" => m => m.LicensePlate,
-            "status" => m => m.Status,
-            "updatedate" => m => m.UpdateDate,
-            _ => m => m.CreationDate // Default
+            "year" => m => EF.Property<int>(m, "Year"),
+            "model" => m => EF.Property<string>(m, "Model"),
+            "licenseplate" => m => EF.Property<string>(m, "LicensePlate"),
+            "status" => m => EF.Property<MotorcycleStatus>(m, "Status"),
+            "updatedate" => m => EF.Property<DateTime>(m, "ModifiedAt"),
+            _ => m => EF.Property<DateTime>(m, "CreatedAt") // Default
         };
 
         return descending

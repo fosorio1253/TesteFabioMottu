@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Common.Enums;
 using Vrumm.Domain.Entities;
 using Vrumm.Domain.Exceptions.Drivers;
@@ -13,15 +14,18 @@ public class CreateRentalCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMessagePublisher _messagePublisher;
     private readonly ILogger<CreateRentalCommandHandler> _logger;
+    private readonly IDateTime _dateTime;
 
     public CreateRentalCommandHandler(
         IUnitOfWork unitOfWork,
         IMessagePublisher messagePublisher,
-        ILogger<CreateRentalCommandHandler> logger)
+        ILogger<CreateRentalCommandHandler> logger,
+        IDateTime dateTime)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _dateTime = dateTime ?? throw new ArgumentNullException(nameof(dateTime));
     }
 
     public async Task<Guid> Handle(CreateRentalCommand command, CancellationToken cancellationToken)
@@ -49,13 +53,6 @@ public class CreateRentalCommandHandler
             throw new NotFoundException("Motocicleta", command.MotorcycleId);
         }
 
-        if (motorcycle.Status != MotorcycleStatus.Available)
-        {
-            _logger.LogWarning("Motocicleta {MotorcycleId} não está disponível (status: {Status})",
-                command.MotorcycleId, motorcycle.Status);
-            throw new MotorcycleNotAvailableException($"Motocicleta não está disponível para aluguel (status: {motorcycle.Status})");
-        }
-
         var plan = await _unitOfWork.Plans.GetByIdAsync(command.PlanId, cancellationToken);
         if (plan == null)
         {
@@ -65,22 +62,26 @@ public class CreateRentalCommandHandler
 
         if (await _unitOfWork.Rentals.HasActiveRentalForMotorcycleAsync(command.MotorcycleId, cancellationToken))
         {
-            _logger.LogWarning("Motocicleta {MotorcycleId} já possui uma locação ativa", command.MotorcycleId);
+            _logger.LogWarning("Motocicleta {MotorcycleId} com placa {LicensePlate} já possui uma locação ativa",
+                command.MotorcycleId, motorcycle.Details().LicensePlate().ToStringRepresentation());
             throw new MotorcycleNotAvailableException("Motocicleta já está alugada.");
         }
 
-        var expectedEndDate = command.StartDate.AddDays(plan.DayCount - 1);
+        var rental = Rental.CreateNextDayRental(
+            command.MotorcycleId,
+            command.DriverId,
+            command.PlanId,
+            _dateTime.Now,
+            plan);
 
-        var rental = new Rental(command.MotorcycleId, command.DriverId, command.PlanId,
-            command.StartDate, expectedEndDate);
-
-        motorcycle.RentMotorcycle();
+        motorcycle.Rent();
 
         await _unitOfWork.Rentals.AddAsync(rental, cancellationToken);
         await _unitOfWork.Motorcycles.UpdateAsync(motorcycle);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Locação {RentalId} criada com sucesso", rental.Id);
+        _logger.LogInformation("Locação {RentalId} criada com sucesso para motocicleta com placa {LicensePlate}",
+            rental.Id, motorcycle.Details().LicensePlate().ToStringRepresentation());
 
         var createdEvent = rental.GenerateCreatedEvent();
         await _messagePublisher.PublishAsync(createdEvent);

@@ -23,6 +23,7 @@ public static class DatabaseDependencyInjection
         services.AddScoped<IDriverRepository, DriverRepository>();
         services.AddScoped<IPlanRepository, PlanRepository>();
         services.AddScoped<IRentalRepository, RentalRepository>();
+        services.AddScoped<IMotorcycleRegistrationEventRepository, MotorcycleRegistrationEventRepository>();
 
         hcBuilder.AddNpgSql(
             dataBaseOptions.PostgreDb.ConnectionString,

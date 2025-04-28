@@ -7,6 +7,7 @@ public interface IUnitOfWork : IDisposable
     IDriverRepository Drivers { get; }
     IPlanRepository Plans { get; }
     IRentalRepository Rentals { get; }
+    IMotorcycleRegistrationEventRepository MotorcycleRegistrationEvents { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     Task BeginTransactionAsync(CancellationToken cancellationToken);

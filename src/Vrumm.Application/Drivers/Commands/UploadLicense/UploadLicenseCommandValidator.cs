@@ -3,8 +3,8 @@
 namespace Vrumm.Application.Drivers.Commands.UploadLicense;
 public class UploadLicenseCommandValidator : AbstractValidator<UploadLicenseCommand>
 {
-    private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".bmp" };
-    private static readonly string[] AllowedContentTypes = { "image/jpeg", "image/png", "image/bmp" };
+    private static readonly string[] AllowedExtensions = { ".png", ".bmp" };
+    private static readonly string[] AllowedContentTypes = { "image/png", "image/bmp" };
     private const int MaxFileSize = 5 * 1024 * 1024; // 5MB
 
     public UploadLicenseCommandValidator()

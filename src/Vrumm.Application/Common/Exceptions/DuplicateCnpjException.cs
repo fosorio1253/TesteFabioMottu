@@ -1,7 +1,7 @@
 ﻿namespace Vrumm.Application.Common.Exceptions;
-public class DuplicateTaxIdException : Exception
+public class DuplicateCnpjException : Exception
 {
-    public DuplicateTaxIdException(string taxId)
+    public DuplicateCnpjException(string taxId)
         : base($"A driver with tax ID \"{taxId}\" already exists.")
     {
     }

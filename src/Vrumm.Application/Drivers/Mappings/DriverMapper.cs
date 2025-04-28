@@ -1,5 +1,5 @@
 ﻿using Vrumm.Application.Drivers.Dtos;
-using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.DriverCompose;
 
 namespace Vrumm.Application.Drivers.Mappings;
 public static class DriverMapper
@@ -12,9 +12,9 @@ public static class DriverMapper
         {
             Id = driver.Id,
             Name = driver.Name,
-            TaxId = driver.TaxId,
-            BirthDate = driver.BirthDate,
-            LicenseNumber = driver.LicenseNumber,
+            TaxId = driver.Cnpj.Value,
+            BirthDate = driver.BirthDate.Value,
+            LicenseNumber = driver.LicenseNumber.Value,
             LicenseType = driver.LicenseType.ToString(),
             LicenseImagePath = driver.LicenseImagePath,
             CreationDate = driver.CreationDate,

@@ -45,7 +45,7 @@ public class CancelRentalCommandHandler
 
         rental.CancelRental();
 
-        motorcycle.ReturnMotorcycle();
+        motorcycle.Return();
 
         await _unitOfWork.Rentals.UpdateAsync(rental);
         await _unitOfWork.Motorcycles.UpdateAsync(motorcycle);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Domain.Entities.MotorcycleCompose;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Motorcycles.Commands.UpdateMotorcycle;
@@ -27,14 +28,18 @@ public class UpdateMotorcycleCommandHandler
             throw new NotFoundException("Motorcycle", command.Id);
         }
 
-        if (command.LicensePlate != motorcycle.LicensePlate &&
+        if (command.LicensePlate != motorcycle.Details().LicensePlate().ToStringRepresentation() &&
             await _unitOfWork.Motorcycles.ExistsByLicensePlateAsync(command.LicensePlate, cancellationToken))
         {
             _logger.LogWarning("License plate {LicensePlate} is already in use", command.LicensePlate);
             throw new DuplicateLicensePlateException(command.LicensePlate);
         }
 
-        motorcycle.Update(command.Model, command.Year, command.LicensePlate);
+        var model = MotorcycleModel.Create(command.Model);
+        var year = ManufactureYear.Create(command.Year);
+        var licensePlate = LicensePlate.Create(command.LicensePlate);
+
+        motorcycle.Update(model, year, licensePlate);
 
         await _unitOfWork.Motorcycles.UpdateAsync(motorcycle);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

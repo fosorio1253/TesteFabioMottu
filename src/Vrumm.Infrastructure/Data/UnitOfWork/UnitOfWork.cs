@@ -13,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
     public IDriverRepository Drivers { get; }
     public IPlanRepository Plans { get; }
     public IRentalRepository Rentals { get; }
+    public IMotorcycleRegistrationEventRepository MotorcycleRegistrationEvents { get; }
 
     public UnitOfWork(
         VrummDbContext context,

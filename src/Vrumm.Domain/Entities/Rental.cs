@@ -102,4 +102,12 @@ public class Rental : Entity<Guid>
 
         return new RentalFinalized(Id, MotorcycleId, DriverId, EndDate.Value, TotalValue.Value);
     }
+
+    public static Rental CreateNextDayRental(Guid motorcycleId, Guid driverId, int planId, DateTime creationDate, Plan plan)
+    {
+        DateTime startDate = creationDate.Date.AddDays(1);
+        DateTime expectedEndDate = startDate.AddDays(plan.DayCount - 1);
+
+        return new Rental(motorcycleId, driverId, planId, startDate, expectedEndDate);
+    }
 }

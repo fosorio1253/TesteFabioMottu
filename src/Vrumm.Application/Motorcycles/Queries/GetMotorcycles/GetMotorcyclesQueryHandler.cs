@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Models;
 using Vrumm.Application.Motorcycles.Dtos;
-using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.MotorcycleCompose;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Motorcycles.Queries.GetMotorcycles;
@@ -55,10 +55,10 @@ public class GetMotorcyclesQueryHandler
         return new MotorcycleDto
         {
             Id = motorcycle.Id,
-            Year = motorcycle.Year,
-            Model = motorcycle.Model,
-            LicensePlate = motorcycle.LicensePlate,
-            Status = motorcycle.Status.ToString(),
+            Year = motorcycle.Details().Year().ToInt(),
+            Model = motorcycle.Details().Model().ToStringRepresentation(),
+            LicensePlate = motorcycle.Details().LicensePlate().ToStringRepresentation(),
+            Status = motorcycle.Status().ToStatus().ToString(),
             CreationDate = motorcycle.CreationDate,
             UpdateDate = motorcycle.UpdateDate
         };

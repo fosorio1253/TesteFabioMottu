@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
-using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.MotorcycleCompose;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 using Vrumm.Infrastructure.Messaging.Abstractions;
 
@@ -31,13 +31,17 @@ public class CreateMotorcycleCommandHandler
             throw new DuplicateLicensePlateException(command.LicensePlate);
         }
 
-        var motorcycle = new Motorcycle(command.Model, command.Year, command.LicensePlate);
+        var model = MotorcycleModel.Create(command.Model);
+        var year = ManufactureYear.Create(command.Year);
+        var licensePlate = LicensePlate.Create(command.LicensePlate);
+
+        var motorcycle = new Motorcycle(model, year, licensePlate);
 
         await _unitOfWork.Motorcycles.AddAsync(motorcycle, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Created motorcycle {Id} with license plate {LicensePlate}",
-            motorcycle.Id, motorcycle.LicensePlate);
+            motorcycle.Id, motorcycle.Details().LicensePlate().ToStringRepresentation());
 
         var registeredEvent = motorcycle.GenerateRegisteredEvent();
         await _messagePublisher.PublishAsync(registeredEvent);

@@ -28,10 +28,17 @@ public class DeleteMotorcycleCommandHandler
             throw new NotFoundException("Motorcycle", command.Id);
         }
 
-        if (motorcycle.Status != MotorcycleStatus.Available)
+        if (motorcycle.Status().CanBeRemoved())
         {
             _logger.LogWarning("Motorcycle {Id} cannot be deleted (status: {Status})", command.Id, motorcycle.Status);
             throw new InvalidOperationException("Cannot delete a motorcycle that is not available.");
+        }
+
+        var rentals = await _unitOfWork.Rentals.GetByMotorcycleIdAsync(command.Id, cancellationToken);
+        if (!motorcycle.CanBeDeleted(rentals))
+        {
+            _logger.LogWarning("Motorcycle {Id} cannot be deleted because it has rental history", command.Id);
+            throw new MotorcycleHasRentalsException(command.Id);
         }
 
         await _unitOfWork.Motorcycles.RemoveAsync(motorcycle);

@@ -1,48 +1,35 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using Vrumm.Domain.Entities;
+using Vrumm.Domain.Common;
+using Vrumm.Domain.Entities.DriverCompose;
 
 namespace Vrumm.Infrastructure.Data.Configuration;
 public class DriverConfiguration : IEntityTypeConfiguration<Driver>
 {
     public void Configure(EntityTypeBuilder<Driver> builder)
     {
-        builder.ToTable("Drivers");
-
-        builder.HasKey(d => d.Id);
-
         builder.Property(d => d.Name)
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(d => d.TaxId)
-            .IsRequired()
-            .HasMaxLength(11);
+        builder.Property(d => d.Cnpj)
+            .HasConversion(cnpj => cnpj.Value, value => Cnpj.Create(value))
+            .IsRequired();
 
         builder.Property(d => d.BirthDate)
+            .HasConversion(birthDate => birthDate.Value, value => BirthDate.Create(value))
             .IsRequired();
 
         builder.Property(d => d.LicenseNumber)
+            .HasConversion(licenseNumber => licenseNumber.Value, value => LicenseNumber.Create(value))
             .IsRequired()
             .HasMaxLength(20);
 
         builder.Property(d => d.LicenseType)
-            .IsRequired()
-            .HasConversion<string>();
+            .HasConversion(licenseType => licenseType.Value, value => LicenseTypeValue.Create(value.ToString()))
+            .IsRequired();
 
         builder.Property(d => d.LicenseImagePath)
-            .HasMaxLength(255);
-
-        builder.Property(d => d.CreationDate)
-            .IsRequired();
-
-        builder.Property(d => d.UpdateDate)
-            .IsRequired();
-
-        builder.HasIndex(d => d.TaxId)
-            .IsUnique();
-
-        builder.HasIndex(d => d.LicenseNumber)
-            .IsUnique();
+            .HasMaxLength(500);
     }
 }

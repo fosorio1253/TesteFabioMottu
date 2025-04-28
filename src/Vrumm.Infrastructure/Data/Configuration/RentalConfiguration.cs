@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.MotorcycleCompose;
+using Vrumm.Domain.Entities.DriverCompose;
 
 namespace Vrumm.Infrastructure.Data.Configuration;
 public class RentalConfiguration : IEntityTypeConfiguration<Rental>
