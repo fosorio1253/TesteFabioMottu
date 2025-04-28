@@ -25,12 +25,17 @@ public sealed class LicensePlate
         return new LicensePlate(normalizedPlate);
     }
 
-    public string ToStringRepresentation() => _value;
+    public string ToStringRepresentation() => _value; // Para uso seguro externo (por ex.: DTO, Log)
+
+    public string GetValue() => _value; // Alternativa para obter o valor controladamente
 
     public override bool Equals(object? obj) =>
         obj is LicensePlate plate && _value == plate._value;
 
     public override int GetHashCode() => _value.GetHashCode();
 
-    public override string ToString() => _value;
+    public override string ToString()
+    {
+        return $"LicensePlate: {_value}"; // Apenas debug interno, não expor valor puro.
+    }
 }

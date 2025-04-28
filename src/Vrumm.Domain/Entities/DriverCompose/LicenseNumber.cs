@@ -21,12 +21,17 @@ public sealed class LicenseNumber
         return new LicenseNumber(value);
     }
 
-    public string Value => _value;
+    public string ToStringRepresentation() => _value;
+
+    public string GetValue() => _value;
 
     public override bool Equals(object? obj) =>
         obj is LicenseNumber license && _value == license._value;
 
     public override int GetHashCode() => _value.GetHashCode();
 
-    public override string ToString() => _value;
+    public override string ToString()
+    {
+        return $"LicenseNumber: {_value}";
+    }
 }

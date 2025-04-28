@@ -1,6 +1,5 @@
 ﻿using Vrumm.Domain.Common;
 using Vrumm.Domain.Events;
-using Vrumm.Domain.Exceptions;
 
 namespace Vrumm.Domain.Entities.MotorcycleCompose;
 public class Motorcycle : Entity<Guid>
@@ -10,7 +9,7 @@ public class Motorcycle : Entity<Guid>
 
     private Motorcycle() { }
 
-    public Motorcycle(MotorcycleModel model, ManufactureYear year, LicensePlate licensePlate) : base()
+    public Motorcycle(MotorcycleModel model, ManufactureYear year, LicensePlate licensePlate)
     {
         Id = Guid.NewGuid();
         _details = new MotorcycleDetails(year, model, licensePlate);
@@ -25,29 +24,34 @@ public class Motorcycle : Entity<Guid>
 
     public void Rent()
     {
-        _status = _status.Rent();
+        _status = _status.TransitionToRent();
         UpdateModificationDate();
     }
 
     public void Return()
     {
-        _status = _status.Return();
+        _status = _status.TransitionToReturn();
         UpdateModificationDate();
     }
 
     public void SetUnderMaintenance()
     {
-        _status = _status.SetUnderMaintenance();
+        _status = _status.TransitionToUnderMaintenance();
         UpdateModificationDate();
     }
 
     public void SetInactive()
     {
-        _status = _status.SetInactive();
+        _status = _status.TransitionToInactive();
         UpdateModificationDate();
     }
 
     public bool CanBeRemoved() => _status.CanBeRemoved();
+
+    public bool CanBeDeleted(IEnumerable<Rental> rentals) => _status.CanBeDeleted(rentals);
+
+    public MotorcycleDetails Details() => _details;
+    public MotorcycleStatusState Status() => _status;
 
     public MotorcycleRegistered GenerateRegisteredEvent()
     {
@@ -58,9 +62,4 @@ public class Motorcycle : Entity<Guid>
             _details.LicensePlate().ToStringRepresentation()
         );
     }
-
-    public bool CanBeDeleted(IEnumerable<Rental> rentals) => _status.CanBeDeleted(rentals);
-
-    public MotorcycleDetails Details() => _details;
-    public MotorcycleStatusState Status() => _status;
 }

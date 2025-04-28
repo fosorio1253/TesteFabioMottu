@@ -52,4 +52,9 @@ public class Repository<T, TId> : IRepository<T, TId> where T : Entity<TId>
         _dbSet.Remove(entity);
         return Task.CompletedTask;
     }
+
+    public async Task<IQueryable<T>> GetQueryAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbSet.AsQueryable();
+    }
 }

@@ -24,7 +24,7 @@ public class GetMotorcyclesQueryHandler
         _logger.LogInformation("Retrieving motorcycles with filters: Status={Status}, YearFrom={YearFrom}, YearTo={YearTo}, Model={Model}, LicensePlate={LicensePlate}",
             query.Status, query.YearFrom, query.YearTo, query.Model, query.LicensePlate);
 
-        var motorcyclesQuery = _unitOfWork.Motorcycles.GetAll();
+        var motorcyclesQuery = await _unitOfWork.Motorcycles.GetQueryAsync(cancellationToken);
 
         motorcyclesQuery = MotorcycleFilter.ApplyFilters(
             motorcyclesQuery,

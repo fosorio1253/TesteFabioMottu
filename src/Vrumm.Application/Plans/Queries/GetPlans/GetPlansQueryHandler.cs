@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using Vrumm.Application.Common.Models;
 using Vrumm.Application.Plans.Dtos;
-using Vrumm.Domain.Entities;
+using Vrumm.Domain.Entities.PlanCompose;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Plans.Queries.GetPlans;
@@ -25,7 +25,7 @@ public class GetPlansQueryHandler
         _logger.LogInformation("Recuperando planos com filtros: MinDays={MinDays}, MaxDays={MaxDays}",
             query.MinDays, query.MaxDays);
 
-        var plansQuery = _unitOfWork.Plans.GetAll();
+        var plansQuery = await _unitOfWork.Plans.GetQueryAsync(cancellationToken);
 
         plansQuery = ApplyFilters(plansQuery, query.MinDays, query.MaxDays);
 

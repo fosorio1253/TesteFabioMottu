@@ -27,7 +27,7 @@ public class GetRentalsQueryHandler
         _logger.LogInformation("Recuperando locações com filtros: MotorcycleId={MotorcycleId}, DriverId={DriverId}, Status={Status}, StartDateFrom={StartDateFrom}, StartDateTo={StartDateTo}",
             query.MotorcycleId, query.DriverId, query.Status, query.StartDateFrom, query.StartDateTo);
 
-        var rentalsQuery = _unitOfWork.Rentals.GetAll();
+        var rentalsQuery = await _unitOfWork.Rentals.GetQueryAsync(cancellationToken);
 
         rentalsQuery = RentalFilter.ApplyFilters(
             rentalsQuery,

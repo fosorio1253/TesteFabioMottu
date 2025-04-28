@@ -27,7 +27,7 @@ public class GetDriversQueryHandler : IQueryHandler<GetDriversQuery, PaginatedLi
     {
         _logger.LogInformation("Retrieving drivers with page {PageNumber}, size {PageSize}", query.PageNumber, query.PageSize);
 
-        var queryable = _unitOfWork.Drivers.GetAll();
+        var queryable = await _unitOfWork.Drivers.GetQueryAsync(cancellationToken);
 
         if (!string.IsNullOrWhiteSpace(query.Filter.Name))
             queryable = queryable.Where(d => d.Name.Contains(query.Filter.Name));

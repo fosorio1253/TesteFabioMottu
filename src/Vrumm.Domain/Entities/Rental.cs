@@ -15,6 +15,9 @@ public class Rental : Entity<Guid>
     public decimal? TotalValue { get; private set; }
     public RentalStatus Status { get; private set; }
 
+    private bool _createdEventEmitted;
+    private bool _finalizedEventEmitted;
+
     private Rental() { }
 
     public Rental(Guid motorcycleId, Guid driverId, int planId, DateTime startDate, DateTime expectedEndDate)
@@ -38,6 +41,9 @@ public class Rental : Entity<Guid>
         StartDate = startDate.Date;
         ExpectedEndDate = expectedEndDate.Date;
         Status = RentalStatus.Active;
+
+        _createdEventEmitted = false;
+        _finalizedEventEmitted = false;
     }
 
     public decimal CalculateReturnValue(DateTime returnDate, Plan plan)
@@ -92,6 +98,11 @@ public class Rental : Entity<Guid>
 
     public RentalCreated GenerateCreatedEvent()
     {
+        if (_createdEventEmitted)
+            throw new DomainException("Evento de criação já foi emitido para esta locação.");
+
+        _createdEventEmitted = true;
+
         return new RentalCreated(Id, MotorcycleId, DriverId, PlanId, StartDate, ExpectedEndDate);
     }
 
@@ -99,6 +110,11 @@ public class Rental : Entity<Guid>
     {
         if (Status != RentalStatus.Finalized || !EndDate.HasValue || !TotalValue.HasValue)
             throw new DomainException("Locação não está finalizada corretamente");
+
+        if (_finalizedEventEmitted)
+            throw new DomainException("Evento de finalização já foi emitido para esta locação.");
+
+        _finalizedEventEmitted = true;
 
         return new RentalFinalized(Id, MotorcycleId, DriverId, EndDate.Value, TotalValue.Value);
     }

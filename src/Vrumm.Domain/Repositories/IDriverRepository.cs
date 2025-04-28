@@ -10,5 +10,4 @@ public interface IDriverRepository : IRepository<Driver, Guid>
     Task<bool> ExistsByLicenseNumberExceptIdAsync(LicenseNumber licenseNumber, Guid id, CancellationToken cancellationToken);
     Task<Driver> GetByCnpjAsync(Cnpj cnpj, CancellationToken cancellationToken);
     Task<IEnumerable<Driver>> GetByLicenseTypeAsync(LicenseTypeValue licenseType, CancellationToken cancellationToken);
-    IQueryable<Driver> GetAll();
 }

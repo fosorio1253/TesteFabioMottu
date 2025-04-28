@@ -6,7 +6,6 @@ public interface IMotorcycleRepository : IRepository<Motorcycle, Guid>
 {
     Task<bool> ExistsByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken);
     Task<bool> ExistsByLicensePlateExceptIdAsync(LicensePlate licensePlate, Guid id, CancellationToken cancellationToken);
-    IQueryable<Motorcycle> GetAll();
     Task<IEnumerable<Motorcycle>> GetByStatusAsync(MotorcycleStatus status, CancellationToken cancellationToken);
     Task<IEnumerable<Motorcycle>> GetByYearRangeAsync(int startYear, int endYear, CancellationToken cancellationToken);
 }

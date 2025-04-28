@@ -10,5 +10,4 @@ public interface IRentalRepository : IRepository<Rental, Guid>
     Task<IEnumerable<Rental>> GetByStatusAsync(RentalStatus status, CancellationToken cancellationToken);
     Task<IEnumerable<Rental>> GetByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
     Task<bool> HasActiveRentalForMotorcycleAsync(Guid motorcycleId, CancellationToken cancellationToken);
-    IQueryable<Rental> GetAll();
 }

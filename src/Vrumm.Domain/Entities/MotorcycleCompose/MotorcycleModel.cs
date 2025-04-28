@@ -20,10 +20,15 @@ public sealed class MotorcycleModel
 
     public string ToStringRepresentation() => _value;
 
+    public string GetValue() => _value;
+
     public override bool Equals(object? obj) =>
         obj is MotorcycleModel model && _value == model._value;
 
     public override int GetHashCode() => _value.GetHashCode();
 
-    public override string ToString() => _value;
+    public override string ToString()
+    {
+        return $"MotorcycleModel: {_value}";
+    }
 }
