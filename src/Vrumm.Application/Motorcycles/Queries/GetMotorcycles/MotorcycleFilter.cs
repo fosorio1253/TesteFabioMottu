@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using Vrumm.Domain.Common.Enums;
 using Vrumm.Domain.Entities.MotorcycleCompose;
 
@@ -36,12 +35,12 @@ internal static class MotorcycleFilter
     {
         Expression<Func<Motorcycle, object>> keySelector = sortBy?.ToLower() switch
         {
-            "year" => m => EF.Property<int>(m, "Year"),
-            "model" => m => EF.Property<string>(m, "Model"),
-            "licenseplate" => m => EF.Property<string>(m, "LicensePlate"),
-            "status" => m => EF.Property<MotorcycleStatus>(m, "Status"),
-            "updatedate" => m => EF.Property<DateTime>(m, "ModifiedAt"),
-            _ => m => EF.Property<DateTime>(m, "CreatedAt") // Default
+            "year" => m => m.Details().Year().ToInt(),
+            "model" => m => m.Details().Model().ToStringRepresentation(),
+            "licenseplate" => m => m.Details().LicensePlate().ToStringRepresentation(),
+            "status" => m => m.Status().ToStatus(),
+            "updatedate" => m => m.UpdateDate,
+            _ => m => m.CreationDate
         };
 
         return descending

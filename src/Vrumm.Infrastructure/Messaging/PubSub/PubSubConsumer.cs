@@ -1,8 +1,8 @@
-﻿using Google.Cloud.PubSub.V1;
+﻿using System.Text.Json;
+using Google.Cloud.PubSub.V1;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Vrumm.Infrastructure.Dependency.Configurations;
 using Vrumm.Infrastructure.Messaging.Abstractions;
 
@@ -60,7 +60,8 @@ public class PubSubConsumer : IMessageConsumer, IHostedService
                 if (!string.IsNullOrEmpty(topic) && _handlers.TryGetValue(topic, out var handler))
                 {
                     var messageType = handler.GetType().GetGenericArguments()[0];
-                    var messageObject = JsonConvert.DeserializeObject(data, messageType);
+                    var messageObject = JsonSerializer.Deserialize(data, messageType,
+                        new JsonSerializerOptions{ PropertyNameCaseInsensitive = true });
 
                     var method = handler.GetType().GetMethod("Invoke");
                     if (method != null)
