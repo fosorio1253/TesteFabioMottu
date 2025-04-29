@@ -1,5 +1,7 @@
-﻿namespace Vrumm.Application.Motorcycles.Commands.UpdateMotorcycle;
-public class UpdateMotorcycleCommand
+﻿using Vrumm.Application.Common.Interfaces;
+
+namespace Vrumm.Application.Motorcycles.Commands.UpdateMotorcycle;
+public class UpdateMotorcycleCommand : ICommand
 {
     public Guid Id { get; set; }
     public string Model { get; set; } = string.Empty;

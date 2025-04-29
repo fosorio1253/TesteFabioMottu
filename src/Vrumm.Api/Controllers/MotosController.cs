@@ -1,33 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Vrumm.Api.Models;
 using Vrumm.Api.Models.Motos;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Application.Common.Models;
 using Vrumm.Application.Motorcycles.Commands.CreateMotorcycle;
 using Vrumm.Application.Motorcycles.Commands.DeleteMotorcycle;
 using Vrumm.Application.Motorcycles.Commands.UpdateMotorcycle;
 using Vrumm.Application.Motorcycles.Dtos;
 using Vrumm.Application.Motorcycles.Queries.GetMotorcycles;
-using Vrumm.Domain.Entities.MotorcycleCompose;
-using Vrumm.Infrastructure.Data.UnitOfWork;
-using Vrumm.Infrastructure.Messaging.Abstractions;
 
 namespace Vrumm.Api.Controllers;
 [ApiController]
 [Route("motos")]
 public class MotosController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMessagePublisher _messagePublisher;
-    private readonly ILogger<MotosController> _logger;
+    private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IQueryDispatcher _queryDispatcher;
 
     public MotosController(
-        IUnitOfWork unitOfWork,
-        IMessagePublisher messagePublisher,
-        ILogger<MotosController> logger)
+        ICommandDispatcher commandDispatcher,
+        IQueryDispatcher queryDispatcher)
     {
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _commandDispatcher = commandDispatcher
+            ?? throw new ArgumentNullException(nameof(commandDispatcher));
+        
+        _queryDispatcher = queryDispatcher
+            ?? throw new ArgumentNullException(nameof(queryDispatcher));
     }
 
     [HttpPost]
@@ -38,9 +36,11 @@ public class MotosController : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = MapToCommand(request);
-        var handler = new CreateMotorcycleCommandHandler(_unitOfWork, _messagePublisher, _logger);
-        await handler.Handle(command, cancellationToken);
-        return CreatedAtAction(nameof(GetMotoById), new { id = request.Identificador }, null);
+
+        var result = await _commandDispatcher
+            .DispatchAsync<CreateMotorcycleCommand, Guid>(command, cancellationToken);
+
+        return CreatedAtAction(nameof(CreateMoto), new { id = result.ToString() }, null);
     }
 
     [HttpGet]
@@ -51,7 +51,13 @@ public class MotosController : ControllerBase
         CancellationToken cancellationToken)
     {
         var query = MapToQuery(request);
-        var result = await new GetMotorcyclesQueryHandler(_unitOfWork, _logger).Handle(query, cancellationToken);
+
+        var result = await _queryDispatcher
+            .DispatchAsync<GetMotorcyclesQuery, PaginatedList<MotorcycleDto>>(query, cancellationToken);
+
+        if (!result.Items.Any())
+            return NotFound(new ErrorResponse("Moto não encontrada"));
+
         var response = MapToResponse(result);
         return Ok(response);
     }
@@ -64,13 +70,19 @@ public class MotosController : ControllerBase
         string id,
         CancellationToken cancellationToken)
     {
-        var motorcycle = await _unitOfWork.Motorcycles.GetByIdAsync(id, cancellationToken);
-        if (motorcycle == null)
+        var query = new GetMotorcyclesQuery
         {
-            return NotFound(new ErrorResponse("Moto não encontrada"));
-        }
+            MotorcycleId = Guid.Parse(id)
+        };
 
-        var response = MapToMotoResponse(motorcycle);
+        var result = await _queryDispatcher
+            .DispatchAsync<GetMotorcyclesQuery, PaginatedList<MotorcycleDto>>
+            (query, cancellationToken);
+
+        if (!result.Items.Any())
+            return NotFound(new ErrorResponse("Moto não encontrada"));
+
+        var response = MapToMotoResponse(result);
         return Ok(response);
     }
 
@@ -83,8 +95,10 @@ public class MotosController : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = MapToUpdateCommand(id, request);
-        var handler = new UpdateMotorcycleCommandHandler(_unitOfWork, _logger);
-        await handler.Handle(command, cancellationToken);
+        
+        await _commandDispatcher
+            .DispatchAsync(command, cancellationToken);
+
         return Ok(new UpdateResponse("Placa modificada com sucesso"));
     }
 
@@ -96,9 +110,11 @@ public class MotosController : ControllerBase
         string id,
         CancellationToken cancellationToken)
     {
-        var command = new DeleteMotorcycleCommand { Id = id };
-        var handler = new DeleteMotorcycleCommandHandler(_unitOfWork, _logger);
-        await handler.Handle(command, cancellationToken);
+        var command = new DeleteMotorcycleCommand { Id = Guid.Parse(id) };
+
+        await _commandDispatcher
+            .DispatchAsync(command, cancellationToken);
+
         return Ok();
     }
 
@@ -114,41 +130,45 @@ public class MotosController : ControllerBase
     {
         return new CreateMotorcycleCommand
         {
-            Id = request.Identificador,
+            Id = Guid.Parse(request.Identificador),
             Model = request.Modelo,
             Year = request.Ano,
             LicensePlate = request.Placa
         };
     }
 
-    private UpdateMotorcycleCommand MapToUpdateCommand(string id, UpdateMotoPlacaRequest request)
+    private UpdateMotorcycleCommand MapToUpdateCommand
+        (string id, UpdateMotoPlacaRequest request)
     {
         return new UpdateMotorcycleCommand
         {
-            Id = id,
+            Id = Guid.Parse(id),
             LicensePlate = request.Placa
         };
     }
 
-    private IReadOnlyList<MotoResponse> MapToResponse(PaginatedList<MotorcycleDto> result)
+    private IReadOnlyList<MotoResponse> MapToResponse
+        (PaginatedList<MotorcycleDto> result)
     {
         return result.Items.Select(dto => new MotoResponse
         {
-            Identificador = dto.Id,
+            Identificador = dto.Id.ToString(),
             Ano = dto.Year,
             Modelo = dto.Model,
             Placa = dto.LicensePlate
         }).ToList();
     }
 
-    private MotoResponse MapToMotoResponse(Motorcycle motorcycle)
+    private MotoResponse MapToMotoResponse(PaginatedList<MotorcycleDto> pMotorcycle)
     {
+        var motorcycle = pMotorcycle.Items.FirstOrDefault();
+
         return new MotoResponse
         {
-            Identificador = motorcycle.Id,
-            Ano = motorcycle.Details().Year().ToInt(),
-            Modelo = motorcycle.Details().Model().ToStringRepresentation(),
-            Placa = motorcycle.Details().LicensePlate().ToStringRepresentation()
+            Identificador = motorcycle.Id.ToString(),
+            Ano = motorcycle.Year,
+            Modelo = motorcycle.Model,
+            Placa = motorcycle.LicensePlate
         };
     }
 }

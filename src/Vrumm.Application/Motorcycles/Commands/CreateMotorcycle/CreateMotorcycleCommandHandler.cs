@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Entities.MotorcycleCompose;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 using Vrumm.Infrastructure.Messaging.Abstractions;
 
 namespace Vrumm.Application.Motorcycles.Commands.CreateMotorcycle;
-public class CreateMotorcycleCommandHandler
+public class CreateMotorcycleCommandHandler : ICommandHandler<CreateMotorcycleCommand, Guid>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMessagePublisher _messagePublisher;

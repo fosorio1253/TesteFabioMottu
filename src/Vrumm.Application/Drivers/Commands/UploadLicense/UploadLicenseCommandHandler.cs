@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 using Vrumm.Infrastructure.Storage.Abstractions;
 
 namespace Vrumm.Application.Drivers.Commands.UploadLicense;
-public class UploadLicenseCommandHandler
+public class UploadLicenseCommandHandler : ICommandHandler<UploadLicenseCommand, string>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IStorageService _storageService;

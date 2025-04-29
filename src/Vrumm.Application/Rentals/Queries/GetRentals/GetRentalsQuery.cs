@@ -1,8 +1,12 @@
-﻿using Vrumm.Domain.Common.Enums;
+﻿using Vrumm.Application.Common.Interfaces;
+using Vrumm.Application.Common.Models;
+using Vrumm.Application.Rentals.Dtos;
+using Vrumm.Domain.Common.Enums;
 
 namespace Vrumm.Application.Rentals.Queries.GetRentals;
-public class GetRentalsQuery
+public class GetRentalsQuery : IQuery<PaginatedList<RentalDto>>
 {
+    public Guid? RentalId { get; set; }
     public Guid? MotorcycleId { get; set; }
     public Guid? DriverId { get; set; }
     public RentalStatus? Status { get; set; }

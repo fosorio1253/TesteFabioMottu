@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
-using Google.Api;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Behaviors;
 using Vrumm.Application.Common.CommandBus;
+using Vrumm.Application.Common.Dispatching;
 using Vrumm.Application.Common.Interfaces;
+using Vrumm.Application.Common.Models;
 using Vrumm.Application.Drivers.Commands.CreateDriver;
 using Vrumm.Application.Drivers.Commands.DeleteDriver;
 using Vrumm.Application.Drivers.Commands.UpdateDriver;
@@ -23,6 +24,7 @@ using Vrumm.Application.Plans.Queries.GetPlans;
 using Vrumm.Application.Rentals.Commands.CancelRental;
 using Vrumm.Application.Rentals.Commands.CreateRental;
 using Vrumm.Application.Rentals.Commands.FinalizeRental;
+using Vrumm.Application.Rentals.Dtos;
 using Vrumm.Application.Rentals.Events;
 using Vrumm.Application.Rentals.Queries.CalculateReturnValue;
 using Vrumm.Application.Rentals.Queries.GetRentals;
@@ -38,6 +40,8 @@ public static class DependencyInjection
         services.AddPlans();
         services.AddRentals();
 
+        services.AddScoped<ICommandDispatcher, CommandDispatcher>();
+        services.AddScoped<IQueryDispatcher, QueryDispatcher>();
         services.AddScoped<ICommandBus>(provider =>
         {
             var innerBus = provider.GetRequiredService<CommandBus>();
@@ -50,6 +54,9 @@ public static class DependencyInjection
     
     public static IServiceCollection AddMotorcycles(this IServiceCollection services)
     {
+        services.AddScoped<ICommandHandler<DeleteMotorcycleCommand>, DeleteMotorcycleCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateMotorcycleCommand>, UpdateMotorcycleCommandHandler>();
+
         services.AddScoped<GetMotorcyclesQueryHandler>();
 
         services.AddScoped<MotorcycleRegisteredNotificationHandler>();
@@ -68,6 +75,9 @@ public static class DependencyInjection
 
     public static IServiceCollection AddDrivers(this IServiceCollection services)
     {
+        services.AddScoped<ICommandHandler<CreateDriverCommand, Guid>, CreateDriverCommandHandler>();
+        services.AddScoped<ICommandHandler<UploadLicenseCommand, string>, UploadLicenseCommandHandler>();
+
         services.AddScoped<GetDriversQueryHandler>();
 
         services.AddScoped<CreateDriverCommandHandler>();
@@ -88,6 +98,10 @@ public static class DependencyInjection
     
     public static IServiceCollection AddRentals(this IServiceCollection services)
     {
+        services.AddScoped<ICommandHandler<CreateRentalCommand, Guid>, CreateRentalCommandHandler>();
+        services.AddScoped<ICommandHandler<FinalizeRentalCommand>, FinalizeRentalCommandHandler>();
+        services.AddScoped<IQueryHandler<GetRentalsQuery, PaginatedList<RentalDto>>, GetRentalsQueryHandler>();
+
         services.AddScoped<GetRentalsQueryHandler>();
         services.AddScoped<CalculateReturnValueQueryHandler>();
 

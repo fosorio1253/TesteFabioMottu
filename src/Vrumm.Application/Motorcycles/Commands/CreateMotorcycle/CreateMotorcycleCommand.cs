@@ -1,7 +1,10 @@
-﻿namespace Vrumm.Application.Motorcycles.Commands.CreateMotorcycle;
-public class CreateMotorcycleCommand
+﻿using Vrumm.Application.Common.Interfaces;
+
+namespace Vrumm.Application.Motorcycles.Commands.CreateMotorcycle;
+public class CreateMotorcycleCommand : ICommand<Guid>
 {
-    public string Model { get; set; } = string.Empty;
+    public Guid Id { get; set; }
+    public string Model { get; set; }
     public int Year { get; set; }
-    public string LicensePlate { get; set; } = string.Empty;
+    public string LicensePlate { get; set; }
 }

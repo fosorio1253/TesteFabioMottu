@@ -2,7 +2,6 @@
 using Vrumm.Application.Common.Exceptions;
 using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Common;
-using Vrumm.Domain.Entities;
 using Vrumm.Domain.Entities.DriverCompose;
 using Vrumm.Domain.Exceptions;
 using Vrumm.Infrastructure.Data.UnitOfWork;

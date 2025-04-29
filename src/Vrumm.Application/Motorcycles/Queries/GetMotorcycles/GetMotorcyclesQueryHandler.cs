@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Application.Common.Models;
 using Vrumm.Application.Motorcycles.Dtos;
 using Vrumm.Domain.Entities.MotorcycleCompose;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Motorcycles.Queries.GetMotorcycles;
-public class GetMotorcyclesQueryHandler
+public class GetMotorcyclesQueryHandler : IQueryHandler<GetMotorcyclesQuery, PaginatedList<MotorcycleDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<GetMotorcyclesQueryHandler> _logger;
@@ -28,6 +29,7 @@ public class GetMotorcyclesQueryHandler
 
         motorcyclesQuery = MotorcycleFilter.ApplyFilters(
             motorcyclesQuery,
+            query.MotorcycleId,
             query.Status,
             query.YearFrom,
             query.YearTo,

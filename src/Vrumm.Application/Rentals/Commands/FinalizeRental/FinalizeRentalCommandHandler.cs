@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Common.Enums;
 using Vrumm.Domain.Exceptions;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 using Vrumm.Infrastructure.Messaging.Abstractions;
 
 namespace Vrumm.Application.Rentals.Commands.FinalizeRental;
-public class FinalizeRentalCommandHandler
+public class FinalizeRentalCommandHandler : ICommandHandler<FinalizeRentalCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMessagePublisher _messagePublisher;

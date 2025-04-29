@@ -7,12 +7,16 @@ internal static class RentalFilter
 {
     public static IQueryable<Rental> ApplyFilters(
         IQueryable<Rental> query,
+        Guid? rentalId,
         Guid? motorcycleId,
         Guid? driverId,
         RentalStatus? status,
         DateTime? startDateFrom,
         DateTime? startDateTo)
     {
+        if (rentalId.HasValue)
+            query = query.Where(r => r.Id == rentalId.Value);
+
         if (motorcycleId.HasValue)
             query = query.Where(r => r.MotorcycleId == motorcycleId.Value);
 

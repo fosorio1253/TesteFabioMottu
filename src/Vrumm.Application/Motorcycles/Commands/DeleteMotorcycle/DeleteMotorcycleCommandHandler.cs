@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
-using Vrumm.Domain.Common.Enums;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Motorcycles.Commands.DeleteMotorcycle;
-public class DeleteMotorcycleCommandHandler
+public class DeleteMotorcycleCommandHandler : ICommandHandler<DeleteMotorcycleCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DeleteMotorcycleCommandHandler> _logger;

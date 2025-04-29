@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Application.Plans;
 using Vrumm.Domain.Entities;
 using Vrumm.Domain.Exceptions.Drivers;
@@ -8,7 +9,7 @@ using Vrumm.Infrastructure.Data.UnitOfWork;
 using Vrumm.Infrastructure.Messaging.Abstractions;
 
 namespace Vrumm.Application.Rentals.Commands.CreateRental;
-public class CreateRentalCommandHandler
+public class CreateRentalCommandHandler : ICommandHandler<CreateRentalCommand, Guid>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPlanFactory _planFactory;
@@ -27,7 +28,7 @@ public class CreateRentalCommandHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task Handle(CreateRentalCommand command, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateRentalCommand command, CancellationToken cancellationToken)
     {
         var motorcycle = await _unitOfWork.Motorcycles.GetByIdAsync(command.MotorcycleId, cancellationToken)
             ?? throw new NotFoundException($"Motorcycle {command.MotorcycleId} not found.");
@@ -59,5 +60,7 @@ public class CreateRentalCommandHandler
         await _publisher.PublishAsync(createdEvent);
 
         _logger.LogInformation("Rental {RentalId} created successfully.", rental.Id);
+
+        return rental.Id;
     }
 }

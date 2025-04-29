@@ -7,12 +7,16 @@ internal static class MotorcycleFilter
 {
     public static IQueryable<Motorcycle> ApplyFilters(
         IQueryable<Motorcycle> query,
+        Guid? motorcycleId,
         MotorcycleStatus? status,
         int? yearFrom,
         int? yearTo,
-        string model,
-        string licensePlate)
+        string? model,
+        string? licensePlate)
     {
+        if (motorcycleId != Guid.Empty)
+            query = query.Where(m => m.Id == motorcycleId);
+
         if (status.HasValue)
             query = query.Where(m => m.Status().ToStatus() == status.Value);
 

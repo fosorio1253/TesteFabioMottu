@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Entities.MotorcycleCompose;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Motorcycles.Commands.UpdateMotorcycle;
-public class UpdateMotorcycleCommandHandler
+public class UpdateMotorcycleCommandHandler : ICommandHandler<UpdateMotorcycleCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateMotorcycleCommandHandler> _logger;

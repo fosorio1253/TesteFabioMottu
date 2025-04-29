@@ -1,45 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Vrumm.Api.Models;
 using Vrumm.Api.Models.Entregador;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Application.Drivers.Commands.CreateDriver;
 using Vrumm.Application.Drivers.Commands.UploadLicense;
-using Vrumm.Infrastructure.Data.UnitOfWork;
-using Vrumm.Infrastructure.Storage.Abstractions;
 
 namespace Vrumm.Api.Controllers;
 [ApiController]
 [Route("entregadores")]
 public class EntregadoresController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IStorageService _storageService;
-    private readonly IOptions<StorageOptions> _storageOptions;
-    private readonly ILogger<EntregadoresController> _logger;
+    private readonly ICommandDispatcher _commandDispatcher;
 
-    public EntregadoresController(
-        IUnitOfWork unitOfWork,
-        IStorageService storageService,
-        IOptions<StorageOptions> storageOptions,
-        ILogger<EntregadoresController> logger)
+    public EntregadoresController(ICommandDispatcher commandDispatcher)
     {
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
-        _storageOptions = storageOptions ?? throw new ArgumentNullException(nameof(storageOptions));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _commandDispatcher = commandDispatcher
+            ?? throw new ArgumentNullException(nameof(commandDispatcher));
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> CreateEntregador(
-        [FromBody] CreateEntregadorRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateEntregador
+        ([FromBody] CreateEntregadorRequest request, CancellationToken cancellationToken)
     {
         var command = MapToCommand(request);
-        var handler = new CreateDriverCommandHandler(_unitOfWork, _logger);
-        await handler.Handle(command, cancellationToken);
-        return CreatedAtAction(nameof(CreateEntregador), new { id = request.Identificador }, null);
+        await _commandDispatcher
+            .DispatchAsync<CreateDriverCommand, Guid>(command, cancellationToken);
+
+        return CreatedAtAction(
+            nameof(CreateEntregador),
+            new { id = request.Identificador }, null);
     }
 
     [HttpPost("{id}/cnh")]
@@ -51,16 +42,18 @@ public class EntregadoresController : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = MapToUploadCommand(id, request);
-        var handler = new UploadLicenseCommandHandler(_unitOfWork, _storageService, _storageOptions, _logger);
-        await handler.Handle(command, cancellationToken);
-        return CreatedAtAction(nameof(UploadCnh), new { id }, null);
+
+        var result = await _commandDispatcher
+            .DispatchAsync<UploadLicenseCommand, string>(command, cancellationToken);
+
+        return CreatedAtAction(nameof(UploadCnh), new { id }, result);
     }
 
     private CreateDriverCommand MapToCommand(CreateEntregadorRequest request)
     {
         return new CreateDriverCommand
         {
-            Id = request.Identificador,
+            Id = Guid.Parse(request.Identificador),
             Name = request.Nome,
             Cnpj = request.Cnpj,
             BirthDate = request.DataNascimento,
@@ -75,7 +68,7 @@ public class EntregadoresController : ControllerBase
         var bytes = Convert.FromBase64String(request.ImagemCnh);
         return new UploadLicenseCommand
         {
-            DriverId = id,
+            DriverId = Guid.Parse(id),
             FileName = $"{id}_cnh.png",
             ContentType = "image/png",
             Content = new MemoryStream(bytes)

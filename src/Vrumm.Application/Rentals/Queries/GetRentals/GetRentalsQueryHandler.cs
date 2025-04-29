@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Application.Common.Models;
 using Vrumm.Application.Drivers.Dtos;
 using Vrumm.Application.Motorcycles.Dtos;
@@ -9,7 +10,7 @@ using Vrumm.Domain.Entities;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Rentals.Queries.GetRentals;
-public class GetRentalsQueryHandler
+public class GetRentalsQueryHandler : IQueryHandler<GetRentalsQuery, PaginatedList<RentalDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<GetRentalsQueryHandler> _logger;
@@ -31,6 +32,7 @@ public class GetRentalsQueryHandler
 
         rentalsQuery = RentalFilter.ApplyFilters(
             rentalsQuery,
+            query.RentalId,
             query.MotorcycleId,
             query.DriverId,
             query.Status,
