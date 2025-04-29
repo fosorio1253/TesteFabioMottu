@@ -1,6 +1,12 @@
 ﻿using FluentValidation;
+using Google.Api;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Vrumm.Application.Common.Behaviors;
+using Vrumm.Application.Common.CommandBus;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Application.Drivers.Commands.CreateDriver;
 using Vrumm.Application.Drivers.Commands.DeleteDriver;
 using Vrumm.Application.Drivers.Commands.UpdateDriver;
@@ -10,7 +16,9 @@ using Vrumm.Application.Motorcycles.Commands.CreateMotorcycle;
 using Vrumm.Application.Motorcycles.Commands.DeleteMotorcycle;
 using Vrumm.Application.Motorcycles.Commands.UpdateMotorcycle;
 using Vrumm.Application.Motorcycles.Events;
+using Vrumm.Application.Motorcycles.Policies;
 using Vrumm.Application.Motorcycles.Queries.GetMotorcycles;
+using Vrumm.Application.Plans;
 using Vrumm.Application.Plans.Queries.GetPlans;
 using Vrumm.Application.Rentals.Commands.CancelRental;
 using Vrumm.Application.Rentals.Commands.CreateRental;
@@ -30,6 +38,13 @@ public static class DependencyInjection
         services.AddPlans();
         services.AddRentals();
 
+        services.AddScoped<ICommandBus>(provider =>
+        {
+            var innerBus = provider.GetRequiredService<CommandBus>();
+            return new PerformanceBehavior(innerBus, provider.GetRequiredService<ILogger<PerformanceBehavior>>(),
+                provider.GetRequiredService<IConfiguration>());
+        });
+
         return services;
     }
     
@@ -38,6 +53,7 @@ public static class DependencyInjection
         services.AddScoped<GetMotorcyclesQueryHandler>();
 
         services.AddScoped<MotorcycleRegisteredNotificationHandler>();
+        services.AddSingleton<IMotorcycleRegistrationPolicy, MotorcycleRegistrationPolicy>();
 
         services.AddScoped<CreateMotorcycleCommandHandler>();
         services.AddScoped<UpdateMotorcycleCommandHandler>();
@@ -64,6 +80,9 @@ public static class DependencyInjection
         services.AddScoped<IValidator<DeleteDriverCommand>, DeleteDriverCommandValidator>();
         services.AddScoped<IValidator<UploadLicenseCommand>, UploadLicenseCommandValidator>();
 
+        services.Configure<StorageOptions>(services.BuildServiceProvider()
+            .GetRequiredService<IConfiguration>().GetSection("GoogleCloud"));
+
         return services;
     }
     
@@ -88,6 +107,7 @@ public static class DependencyInjection
 
     public static IServiceCollection AddPlans(this IServiceCollection services)
     {
+        services.AddSingleton<IPlanFactory, PlanFactory>();
         services.AddScoped<GetPlansQueryHandler>();
         return services;
     }

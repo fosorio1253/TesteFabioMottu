@@ -7,8 +7,11 @@ public class Plan : Entity<int>
     public int DayCount { get; private set; }
     public decimal DailyRate { get; private set; }
     public decimal PenaltyPercentage { get; private set; }
+    public decimal AdditionalDayRate { get; private set; }
+
     private Plan() { }
-    public Plan(int id, int dayCount, decimal dailyRate, decimal penaltyPercentage)
+
+    public Plan(int id, int dayCount, decimal dailyRate, decimal penaltyPercentage, decimal additionalDayRate)
     {
         if (dayCount <= 0)
             throw new DomainException("Quantidade de dias deve ser maior que zero");
@@ -16,15 +19,21 @@ public class Plan : Entity<int>
             throw new DomainException("Valor diário deve ser maior que zero");
         if (penaltyPercentage < 0 || penaltyPercentage > 100)
             throw new DomainException("Percentual de multa deve estar entre 0 e 100");
+        if (additionalDayRate < 0)
+            throw new DomainException("Valor para dias adicionais não pode ser negativo");
+
         Id = id;
         DayCount = dayCount;
         DailyRate = dailyRate;
         PenaltyPercentage = penaltyPercentage;
+        AdditionalDayRate = additionalDayRate;
     }
+
     public decimal CalculateTotalValue()
     {
         return DayCount * DailyRate;
     }
+
     public decimal CalculateEarlyReturnPenalty(int actualDays)
     {
         if (actualDays >= DayCount)
@@ -33,30 +42,11 @@ public class Plan : Entity<int>
         var remainingValue = remainingDays * DailyRate;
         return remainingValue * (PenaltyPercentage / 100);
     }
+
     public decimal CalculateAdditionalDaysValue(int additionalDays)
     {
         if (additionalDays <= 0)
             return 0;
-        return additionalDays * 50.00m;
-    }
-    public static Plan CreateSevenDayPlan()
-    {
-        return new Plan(1, 7, 30.00m, 20.00m);
-    }
-    public static Plan CreateFifteenDayPlan()
-    {
-        return new Plan(2, 15, 28.00m, 40.00m);
-    }
-    public static Plan CreateThirtyDayPlan()
-    {
-        return new Plan(3, 30, 22.00m, 40.00m);
-    }
-    public static Plan CreateFortyFiveDayPlan()
-    {
-        return new Plan(4, 45, 20.00m, 40.00m);
-    }
-    public static Plan CreateFiftyDayPlan()
-    {
-        return new Plan(5, 50, 18.00m, 40.00m);
+        return additionalDays * AdditionalDayRate;
     }
 }

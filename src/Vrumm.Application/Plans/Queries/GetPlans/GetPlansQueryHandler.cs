@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using Vrumm.Application.Common.Models;
 using Vrumm.Application.Plans.Dtos;
-using Vrumm.Domain.Entities.PlanCompose;
+using Vrumm.Domain.Entities;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Plans.Queries.GetPlans;

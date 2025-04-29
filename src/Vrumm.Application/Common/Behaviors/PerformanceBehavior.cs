@@ -1,50 +1,65 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Interfaces;
 
 namespace Vrumm.Application.Common.Behaviors;
-public class PerformanceBehavior<TRequest, TResult> : ICommandPipelineBehavior<TRequest, TResult>
-        where TRequest : ICommand<TResult>
+public class PerformanceBehavior : ICommandBus
 {
-    private readonly ILogger<PerformanceBehavior<TRequest, TResult>> _logger;
-    private readonly ICurrentUserService _currentUserService;
+    private readonly ICommandBus _next;
+    private readonly ILogger<PerformanceBehavior> _logger;
     private readonly Stopwatch _stopwatch;
+    private readonly int _performanceThresholdMs;
 
     public PerformanceBehavior(
-        ILogger<PerformanceBehavior<TRequest, TResult>> logger,
-        ICurrentUserService currentUserService)
+        ICommandBus next,
+        ILogger<PerformanceBehavior> logger,
+        IConfiguration configuration)
     {
+        _next = next ?? throw new ArgumentNullException(nameof(next));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
         _stopwatch = new Stopwatch();
+        _performanceThresholdMs = configuration.GetValue<int>("Performance:ThresholdMs", 500);
     }
 
-    public async Task<TResult> Handle(
-        TRequest request,
-        CancellationToken cancellationToken,
-        CommandHandlerDelegate<TResult> next)
-    {
-        _stopwatch.Start();
 
+    public async Task<TResult> DispatchCommand<TResult>(ICommand<TResult> command, CancellationToken cancellationToken)
+    {
+        _stopwatch.Restart();
         try
         {
-            return await next();
+            return await _next.DispatchCommand(command, cancellationToken);
         }
         finally
         {
             _stopwatch.Stop();
-            var elapsedMilliseconds = _stopwatch.ElapsedMilliseconds;
+            LogPerformanceIfSlow(command.GetType().Name, _stopwatch.ElapsedMilliseconds);
+        }
+    }
 
-            if (elapsedMilliseconds > 500)
-            {
-                var requestName = typeof(TRequest).Name;
-                var userId = _currentUserService.UserId ?? "Anonymous";
-                var userName = _currentUserService.UserName ?? "Anonymous";
+    public async Task<TResponse> DispatchQuery<TResponse>(IQuery<TResponse> query, CancellationToken cancellationToken)
+    {
+        _stopwatch.Restart();
+        try
+        {
+            return await _next.DispatchQuery<TResponse>(query, cancellationToken);
+        }
+        finally
+        {
+            _stopwatch.Stop();
+            LogPerformanceIfSlow(query.GetType().Name, _stopwatch.ElapsedMilliseconds);
+        }
+    }
 
-                _logger.LogWarning(
-                    "Long running command: {RequestName} took {ElapsedMilliseconds}ms by user {UserId} ({UserName})",
-                    requestName, elapsedMilliseconds, userId, userName);
-            }
+    private void LogPerformanceIfSlow(string requestName, long elapsedMilliseconds)
+    {
+        if (elapsedMilliseconds > _performanceThresholdMs)
+        {
+            _logger.LogWarning(
+                "Long running request: {RequestName} took {ElapsedMilliseconds}ms (threshold: {ThresholdMs}ms)",
+                requestName,
+                elapsedMilliseconds,
+                _performanceThresholdMs);
         }
     }
 }

@@ -15,19 +15,19 @@ internal static class MotorcycleFilter
         string licensePlate)
     {
         if (status.HasValue)
-            query = query.Where(m => EF.Property<MotorcycleStatus>(m, "Status") == status.Value);
+            query = query.Where(m => m.Status().ToStatus() == status.Value);
 
         if (yearFrom.HasValue)
-            query = query.Where(m => EF.Property<int>(m, "Year") >= yearFrom.Value);
+            query = query.Where(m => m.Details().Year().ToInt() >= yearFrom.Value);
 
         if (yearTo.HasValue)
-            query = query.Where(m => EF.Property<int>(m, "Year") <= yearTo.Value);
+            query = query.Where(m => m.Details().Year().ToInt() <= yearTo.Value);
 
         if (!string.IsNullOrWhiteSpace(model))
-            query = query.Where(m => EF.Property<string>(m, "Model").Contains(model));
+            query = query.Where(m => m.Details().Model().ToStringRepresentation().Contains(model));
 
         if (!string.IsNullOrWhiteSpace(licensePlate))
-            query = query.Where(m => EF.Property<string>(m, "LicensePlate").Contains(licensePlate));
+            query = query.Where(m => m.Details().LicensePlate().ToStringRepresentation().Contains(licensePlate));
 
         return query;
     }

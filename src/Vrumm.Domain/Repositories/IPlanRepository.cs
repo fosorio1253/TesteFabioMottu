@@ -1,4 +1,4 @@
-﻿using Vrumm.Domain.Entities.PlanCompose;
+﻿using Vrumm.Domain.Entities;
 
 namespace Vrumm.Domain.Repositories;
 public interface IPlanRepository : IRepository<Plan, int>

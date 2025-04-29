@@ -21,7 +21,7 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
             .IsRequired();
 
         builder.Property(d => d.LicenseNumber)
-            .HasConversion(licenseNumber => licenseNumber.Value, value => LicenseNumber.Create(value))
+            .HasConversion(licenseNumber => licenseNumber.ToStringRepresentation(), value => LicenseNumber.Create(value))
             .IsRequired()
             .HasMaxLength(20);
 

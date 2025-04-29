@@ -93,7 +93,7 @@ public class GetRentalsQueryHandler
                 Name = driver.Name,
                 TaxId = driver.Cnpj.Value,
                 BirthDate = driver.BirthDate.Value,
-                LicenseNumber = driver.LicenseNumber.Value,
+                LicenseNumber = driver.LicenseNumber.ToStringRepresentation(),
                 LicenseType = driver.LicenseType.Value.ToString(),
                 LicenseImagePath = driver.LicenseImagePath,
                 CreationDate = driver.CreationDate,

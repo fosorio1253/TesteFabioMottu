@@ -36,7 +36,7 @@ public class CreateDriverCommandHandler : ICommandHandler<CreateDriverCommand, G
 
         if (await _unitOfWork.Drivers.ExistsByLicenseNumberAsync(licenseNumber, cancellationToken))
         {
-            _logger.LogWarning("Driver with LicenseNumber {LicenseNumber} already exists", licenseNumber.Value);
+            _logger.LogWarning("Driver with LicenseNumber {LicenseNumber} already exists", licenseNumber.ToStringRepresentation());
             throw new DomainException("License number must be unique.");
         }
 
