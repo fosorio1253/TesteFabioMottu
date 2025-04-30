@@ -29,10 +29,11 @@ public class UpdateDriverCommandHandler : ICommandHandler<UpdateDriverCommand>
             throw new NotFoundException("Entregador", command.Id);
 
         var cnpj = Cnpj.Create(command.TaxId);
-        var licenseNumber = LicenseNumber.Create(command.LicenseNumber);
 
         if (await _unitOfWork.Drivers.ExistsByCnpjExceptIdAsync(cnpj, command.Id, cancellationToken))
             throw new DuplicateDriverException(command.TaxId);
+
+        var licenseNumber = LicenseNumber.Create(command.LicenseNumber);
 
         if (await _unitOfWork.Drivers.ExistsByLicenseNumberExceptIdAsync(licenseNumber, command.Id, cancellationToken))
             throw new DuplicateLicenseNumberException(command.LicenseNumber);

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Vrumm.Application.Common.Exceptions;
 using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Common;
 using Vrumm.Domain.Entities.DriverCompose;
 using Vrumm.Domain.Exceptions;
+using Vrumm.Domain.Exceptions.Drivers;
 using Vrumm.Domain.Options;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 using Vrumm.Infrastructure.Storage.Abstractions;
@@ -54,36 +54,12 @@ public class CreateDriverCommandHandler : ICommandHandler<CreateDriverCommand, G
             cnpj,
             BirthDate.Create(command.BirthDate),
             licenseNumber,
-            LicenseTypeValue.Create(command.LicenseType));
+            LicenseTypeValue.Create(command.LicenseType),
+            command.LicenseImageBase64);
 
-        if (string.IsNullOrEmpty(command.LicenseImageBase64))
-        {
-            _logger.LogWarning("License image is required for driver with CNPJ {Cnpj}", command.Cnpj);
-            throw new DomainException("Imagem da CNH é obrigatória");
-        }
-
-        byte[] imageBytes;
-        try
-        {
-            imageBytes = Convert.FromBase64String(command.LicenseImageBase64);
-        }
-        catch (FormatException)
-        {
-            _logger.LogWarning("Invalid base64 for license image for driver with CNPJ {Cnpj}", command.Cnpj);
-            throw new DomainException("Imagem da CNH deve ser um base64 válido");
-        }
-
-        string contentType = imageBytes.Length > 0 && imageBytes[1] == 0x50 ? "image/png" : "image/bmp";
-        if (contentType != "image/png" && contentType != "image/bmp")
-        {
-            _logger.LogWarning("Invalid file type for license image for driver with CNPJ {Cnpj}", command.Cnpj);
-            throw new InvalidFileTypeException("Imagem da CNH deve ser PNG ou BMP");
-        }
-
-        string fileName = $"licenses/{driver.Id}_cnh.{(contentType == "image/png" ? "png" : "bmp")}";
-        await using var stream = new MemoryStream(imageBytes);
+        await using var stream = new MemoryStream(driver.ImageBytes);
         var imageUrl = await _storageService.UploadFileAsync
-            (_bucketName, fileName, stream, contentType, cancellationToken);
+            (_bucketName, driver.FileName, stream, driver.ContentType, cancellationToken);
 
         driver.UpdateLicenseImage(imageUrl);
 

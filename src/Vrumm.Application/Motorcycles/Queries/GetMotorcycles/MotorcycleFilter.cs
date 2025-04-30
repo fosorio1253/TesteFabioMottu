@@ -18,19 +18,19 @@ internal static class MotorcycleFilter
             query = query.Where(m => m.Id == motorcycleId);
 
         if (status.HasValue)
-            query = query.Where(m => m.Status().ToStatus() == status.Value);
+            query = query.Where(m => m.Status() == status.Value);
 
         if (yearFrom.HasValue)
-            query = query.Where(m => m.Details().Year().ToInt() >= yearFrom.Value);
+            query = query.Where(m => m.Year() >= yearFrom.Value);
 
         if (yearTo.HasValue)
-            query = query.Where(m => m.Details().Year().ToInt() <= yearTo.Value);
+            query = query.Where(m => m.Year() <= yearTo.Value);
 
         if (!string.IsNullOrWhiteSpace(model))
-            query = query.Where(m => m.Details().Model().ToStringRepresentation().Contains(model));
+            query = query.Where(m => m.Model().Contains(model));
 
         if (!string.IsNullOrWhiteSpace(licensePlate))
-            query = query.Where(m => m.Details().LicensePlate().ToStringRepresentation().Contains(licensePlate));
+            query = query.Where(m => m.LicensePlate().Contains(licensePlate));
 
         return query;
     }
@@ -39,10 +39,10 @@ internal static class MotorcycleFilter
     {
         Expression<Func<Motorcycle, object>> keySelector = sortBy?.ToLower() switch
         {
-            "year" => m => m.Details().Year().ToInt(),
-            "model" => m => m.Details().Model().ToStringRepresentation(),
-            "licenseplate" => m => m.Details().LicensePlate().ToStringRepresentation(),
-            "status" => m => m.Status().ToStatus(),
+            "year" => m => m.Year(),
+            "model" => m => m.Model(),
+            "licenseplate" => m => m.LicensePlate(),
+            "status" => m => m.StatusToStringRepresentation(),
             "updatedate" => m => m.UpdateDate,
             _ => m => m.CreationDate
         };

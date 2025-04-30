@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vrumm.Domain.Common;
 using Vrumm.Domain.Entities.MotorcycleCompose;
 
 namespace Vrumm.Infrastructure.Data.Configuration;
@@ -17,7 +16,7 @@ public class MotorcycleConfiguration : IEntityTypeConfiguration<Motorcycle>
             details.Property(d => d.LicensePlate().ToStringRepresentation()).HasColumnName("LicensePlate");
         });
 
-        builder.Property(m => m.Status().ToStatus()).HasColumnName("Status")
+        builder.Property(m => m.Status()).HasColumnName("Status")
               .HasConversion(
                   status => status,
                   value => MotorcycleStatusState.Available().ToStatus());

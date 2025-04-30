@@ -57,10 +57,10 @@ public class GetMotorcyclesQueryHandler : IQueryHandler<GetMotorcyclesQuery, Pag
         return new MotorcycleDto
         {
             Id = motorcycle.Id,
-            Year = motorcycle.Details().Year().ToInt(),
-            Model = motorcycle.Details().Model().ToStringRepresentation(),
-            LicensePlate = motorcycle.Details().LicensePlate().ToStringRepresentation(),
-            Status = motorcycle.Status().ToStatus().ToString(),
+            Year = motorcycle.Year(),
+            Model = motorcycle.Model(),
+            LicensePlate = motorcycle.LicensePlate(),
+            Status = motorcycle.StatusToStringRepresentation(),
             CreationDate = motorcycle.CreationDate,
             UpdateDate = motorcycle.UpdateDate
         };

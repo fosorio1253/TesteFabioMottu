@@ -12,6 +12,7 @@ using Vrumm.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//TODO
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<PerformanceOptions>(builder.Configuration.GetSection(PerformanceOptions.SectionName));
 builder.Services.Configure<GoogleCloudStorageOptions>(builder.Configuration.GetSection(GoogleCloudStorageOptions.SectionName));

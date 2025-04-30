@@ -2,6 +2,7 @@
 using Vrumm.Application.Common.Exceptions;
 using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Entities.MotorcycleCompose;
+using Vrumm.Domain.Exceptions.Motorcycles;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Motorcycles.Commands.UpdateMotorcycle;
@@ -14,25 +15,25 @@ public class UpdateMotorcycleCommandHandler : ICommandHandler<UpdateMotorcycleCo
         IUnitOfWork unitOfWork,
         ILogger<UpdateMotorcycleCommandHandler> logger)
     {
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _unitOfWork = unitOfWork
+            ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _logger = logger
+            ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task Handle(UpdateMotorcycleCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Updating motorcycle {Id}", command.Id);
 
-        var motorcycle = await _unitOfWork.Motorcycles.GetByIdAsync(command.Id, cancellationToken);
-        if (motorcycle == null)
-        {
-            _logger.LogWarning("Motorcycle {Id} not found", command.Id);
-            throw new NotFoundException("Motorcycle", command.Id);
-        }
+        var motorcycle = await _unitOfWork.Motorcycles.GetByIdAsync(command.Id, cancellationToken)
+            ?? throw new NotFoundException("Motorcycle", command.Id);
 
-        if (command.LicensePlate != motorcycle.Details().LicensePlate().ToStringRepresentation() &&
-            await _unitOfWork.Motorcycles.ExistsByLicensePlateAsync(command.LicensePlate, cancellationToken))
+        if (command.LicensePlate != motorcycle.LicensePlate()
+            && await _unitOfWork.Motorcycles.ExistsByLicensePlateAsync
+            (command.LicensePlate, cancellationToken))
         {
-            _logger.LogWarning("License plate {LicensePlate} is already in use", command.LicensePlate);
+            _logger.LogWarning("License plate {LicensePlate} is already in use",
+                command.LicensePlate);
             throw new DuplicateLicensePlateException(command.LicensePlate);
         }
 

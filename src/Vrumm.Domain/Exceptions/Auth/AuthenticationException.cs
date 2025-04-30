@@ -1,4 +1,4 @@
-﻿namespace Vrumm.Application.Common.Exceptions;
+﻿namespace Vrumm.Domain.Exceptions.Auth;
 public class AuthenticationException : Exception
 {
     public AuthenticationException() : base() { }

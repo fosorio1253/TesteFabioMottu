@@ -23,21 +23,21 @@ public class GetDriversQueryHandler : IQueryHandler<GetDriversQuery, PaginatedLi
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<PaginatedList<DriverDto>> Handle(GetDriversQuery query, CancellationToken cancellationToken)
+    public async Task<PaginatedList<DriverDto>> Handle
+        (GetDriversQuery query, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Retrieving drivers with page {PageNumber}, size {PageSize}", query.PageNumber, query.PageSize);
+        _logger.LogInformation("Retrieving drivers with page {PageNumber}, size {PageSize}",
+            query.PageNumber, query.PageSize);
 
         var queryable = await _unitOfWork.Drivers.GetQueryAsync(cancellationToken);
 
-        if (!string.IsNullOrWhiteSpace(query.Filter.Name))
-            queryable = queryable.Where(d => d.Name.Contains(query.Filter.Name));
-
-        if (!string.IsNullOrWhiteSpace(query.Filter.TaxId))
-            queryable = queryable.Where(d => d.Cnpj.Value == query.Filter.TaxId);
-
-        if (!string.IsNullOrWhiteSpace(query.Filter.LicenseType))
-            queryable = queryable.Where(d => d.LicenseType.Value
-            == Enum.Parse<LicenseType>(query.Filter.LicenseType));
+        queryable.Where(q =>
+            (string.IsNullOrWhiteSpace(query.Filter.Name)
+                || q.Name.Contains(query.Filter.Name)) &&
+            (string.IsNullOrWhiteSpace(query.Filter.TaxId)
+                || q.Cnpj.Value.Contains(query.Filter.TaxId)) &&
+            (string.IsNullOrWhiteSpace(query.Filter.LicenseType)
+                || q.LicenseType.Value == Enum.Parse<LicenseType>(query.Filter.LicenseType)));
 
         queryable = ApplySorting(queryable, query.SortBy, query.SortDescending);
 
@@ -49,14 +49,17 @@ public class GetDriversQueryHandler : IQueryHandler<GetDriversQuery, PaginatedLi
         var totalCount = await queryable.CountAsync(cancellationToken);
         var driverDtos = drivers.Select(DriverMapper.ToDto).ToList().AsReadOnly();
 
-        var paginatedList = new PaginatedList<DriverDto>(driverDtos, totalCount, query.PageNumber, query.PageSize);
+        var paginatedList = new PaginatedList<DriverDto>
+            (driverDtos, totalCount, query.PageNumber, query.PageSize);
 
-        _logger.LogInformation("Retrieved {DriverCount} drivers for page {PageNumber}", driverDtos.Count, query.PageNumber.ToString());
+        _logger.LogInformation("Retrieved {DriverCount} drivers for page {PageNumber}",
+            driverDtos.Count, query.PageNumber.ToString());
 
         return paginatedList;
     }
 
-    private IQueryable<Driver> ApplySorting(IQueryable<Driver> query, string sortBy, bool descending)
+    private IQueryable<Driver> ApplySorting
+        (IQueryable<Driver> query, string sortBy, bool descending)
     {
         Expression<Func<Driver, object>> keySelector = sortBy?.ToLower() switch
         {

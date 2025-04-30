@@ -45,10 +45,14 @@ public sealed class MotorcycleStatusState
         return Inactive();
     }
 
-    public bool CanBeRemoved() => _status != MotorcycleStatus.Rented && _status != MotorcycleStatus.UnderMaintenance;
+    public bool CanBeRemoved() 
+        => _status != MotorcycleStatus.Rented
+        && _status != MotorcycleStatus.UnderMaintenance;
 
-    public bool CanBeDeleted(IEnumerable<Rental> rentals) =>
-        _status == MotorcycleStatus.Available && (rentals == null || !rentals.Any());
+    public bool CanBeDeleted(IEnumerable<Rental> rentals)
+        => _status == MotorcycleStatus.Available
+        && (rentals == null || !rentals.Any());
 
-    public MotorcycleStatus ToStatus() => _status;
+    public MotorcycleStatus ToStatus()
+        => _status;
 }

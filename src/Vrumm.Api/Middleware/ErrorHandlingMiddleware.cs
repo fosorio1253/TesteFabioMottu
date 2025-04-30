@@ -2,6 +2,8 @@
 using System.Text.Json;
 using Vrumm.Api.Models;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Domain.Exceptions.Drivers;
+using Vrumm.Domain.Exceptions.Motorcycles;
 
 namespace Vrumm.Api.Middleware;
 public class ErrorHandlingMiddleware

@@ -20,18 +20,13 @@ public class UploadLicenseCommandHandler : ICommandHandler<UploadLicenseCommand,
     {
         _unitOfWork = unitOfWork;
         _storageService = storageService;
-        var tmpOptions = options.Value
-            ?? throw new ArgumentNullException(nameof(options));
-        _bucketName = tmpOptions.LicenseBucketName
-            ?? throw new InvalidOperationException("Google Cloud Storage bucket name not configured.");
-        _expirationMinutes = tmpOptions.LicenseSignedUrlExpirationMinutes;
+        _bucketName = options.Value.LicenseBucketName;
+        _expirationMinutes = options.Value.LicenseSignedUrlExpirationMinutes;
     }
 
-    public async Task<string> Handle(UploadLicenseCommand command, CancellationToken cancellationToken)
+    public async Task<string> Handle
+        (UploadLicenseCommand command, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(_bucketName))
-            throw new InvalidOperationException("Storage bucket name is not configured.");
-
         var driver = await _unitOfWork.Drivers.GetByIdAsync(command.DriverId, cancellationToken)
             ?? throw new NotFoundException($"Driver {command.DriverId} not found.");
 

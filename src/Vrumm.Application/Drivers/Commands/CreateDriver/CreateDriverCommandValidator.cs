@@ -12,6 +12,9 @@ public class CreateDriverCommandValidator : AbstractValidator<CreateDriverComman
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
 
+        RuleFor(x => x.LicenseImageBase64)
+            .NotEmpty().WithMessage("License image is required.");
+
         RuleFor(x => x.Cnpj)
             .NotEmpty().WithMessage("CNPJ is required.")
             .Must(BeValidCnpj).WithMessage("CNPJ must be a valid 14-digit number with correct check digits.");

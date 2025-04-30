@@ -1,4 +1,4 @@
-﻿namespace Vrumm.Application.Common.Exceptions;
+﻿namespace Vrumm.Domain.Exceptions.Motorcycles;
 public class MotorcycleHasRentalsException : Exception
 {
     public MotorcycleHasRentalsException()

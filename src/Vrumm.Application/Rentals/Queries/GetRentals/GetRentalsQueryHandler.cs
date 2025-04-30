@@ -23,7 +23,8 @@ public class GetRentalsQueryHandler : IQueryHandler<GetRentalsQuery, PaginatedLi
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<PaginatedList<RentalDto>> Handle(GetRentalsQuery query, CancellationToken cancellationToken)
+    public async Task<PaginatedList<RentalDto>> Handle
+        (GetRentalsQuery query, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Recuperando locações com filtros: MotorcycleId={MotorcycleId}, DriverId={DriverId}, Status={Status}, StartDateFrom={StartDateFrom}, StartDateTo={StartDateTo}",
             query.MotorcycleId, query.DriverId, query.Status, query.StartDateFrom, query.StartDateTo);
@@ -48,14 +49,17 @@ public class GetRentalsQueryHandler : IQueryHandler<GetRentalsQuery, PaginatedLi
 
         var totalCount = await rentalsQuery.CountAsync(cancellationToken);
 
-        var dtos = await Task.WhenAll(rentals.Select(r => MapToDto(r, query.IncludeRelatedData, cancellationToken)));
+        var dtos = await Task.WhenAll(rentals.Select(r 
+            => MapToDto(r, query.IncludeRelatedData, cancellationToken)));
 
         _logger.LogInformation("Recuperadas {Count} locações", dtos.Length);
 
-        return new PaginatedList<RentalDto>(dtos.ToList(), totalCount, query.PageNumber, query.PageSize);
+        return new PaginatedList<RentalDto>
+            (dtos.ToList(), totalCount, query.PageNumber, query.PageSize);
     }
 
-    private async Task<RentalDto> MapToDto(Rental rental, bool includeRelatedData, CancellationToken cancellationToken)
+    private async Task<RentalDto> MapToDto
+        (Rental rental, bool includeRelatedData, CancellationToken cancellationToken)
     {
         var dto = new RentalDto
         {
@@ -74,17 +78,20 @@ public class GetRentalsQueryHandler : IQueryHandler<GetRentalsQuery, PaginatedLi
 
         if (includeRelatedData)
         {
-            var motorcycle = await _unitOfWork.Motorcycles.GetByIdAsync(rental.MotorcycleId, cancellationToken);
-            var driver = await _unitOfWork.Drivers.GetByIdAsync(rental.DriverId, cancellationToken);
-            var plan = await _unitOfWork.Plans.GetByIdAsync(rental.PlanId, cancellationToken);
+            var motorcycle = await _unitOfWork.Motorcycles
+                .GetByIdAsync(rental.MotorcycleId, cancellationToken);
+            var driver = await _unitOfWork.Drivers
+                .GetByIdAsync(rental.DriverId, cancellationToken);
+            var plan = await _unitOfWork.Plans
+                .GetByIdAsync(rental.PlanId, cancellationToken);
 
             dto.Motorcycle = motorcycle != null ? new MotorcycleDto
             {
                 Id = motorcycle.Id,
-                Year = motorcycle.Details().Year().ToInt(),
-                Model = motorcycle.Details().Model().ToStringRepresentation(),
-                LicensePlate = motorcycle.Details().LicensePlate().ToStringRepresentation(),
-                Status = motorcycle.Status().ToStatus().ToString(),
+                Year = motorcycle.Year(),
+                Model = motorcycle.Model(),
+                LicensePlate = motorcycle.LicensePlate(),
+                Status = motorcycle.StatusToStringRepresentation(),
                 CreationDate = motorcycle.CreationDate,
                 UpdateDate = motorcycle.UpdateDate
             } : null;

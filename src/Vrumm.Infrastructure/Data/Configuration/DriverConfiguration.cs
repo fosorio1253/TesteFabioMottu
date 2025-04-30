@@ -31,5 +31,9 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
 
         builder.Property(d => d.LicenseImagePath)
             .HasMaxLength(500);
+
+        builder.Ignore(d => d.ImageBytes);
+        builder.Ignore(d => d.ContentType);
+        builder.Ignore(d => d.FileName);
     }
 }

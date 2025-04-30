@@ -1,4 +1,4 @@
-﻿namespace Vrumm.Application.Common.Exceptions;
+﻿namespace Vrumm.Domain.Exceptions.Drivers;
 public class DuplicateCnpjException : Exception
 {
     public DuplicateCnpjException(string taxId)

@@ -1,11 +1,12 @@
 ﻿using Vrumm.Domain.Common;
+using Vrumm.Domain.Common.Enums;
 using Vrumm.Domain.Events;
 
 namespace Vrumm.Domain.Entities.MotorcycleCompose;
 public class Motorcycle : Entity<Guid>
 {
     private MotorcycleDetails _details;
-    private MotorcycleStatusState _status;
+    private MotorcycleStatusState _statusState;
 
     private Motorcycle() { }
 
@@ -13,7 +14,7 @@ public class Motorcycle : Entity<Guid>
     {
         Id = Guid.NewGuid();
         _details = new MotorcycleDetails(year, model, licensePlate);
-        _status = MotorcycleStatusState.Available();
+        _statusState = MotorcycleStatusState.Available();
     }
 
     public void Update(MotorcycleModel model, ManufactureYear year, LicensePlate licensePlate)
@@ -24,34 +25,27 @@ public class Motorcycle : Entity<Guid>
 
     public void Rent()
     {
-        _status = _status.TransitionToRent();
+        _statusState = _statusState.TransitionToRent();
         UpdateModificationDate();
     }
 
     public void Return()
     {
-        _status = _status.TransitionToReturn();
+        _statusState = _statusState.TransitionToReturn();
         UpdateModificationDate();
     }
 
     public void SetUnderMaintenance()
     {
-        _status = _status.TransitionToUnderMaintenance();
+        _statusState = _statusState.TransitionToUnderMaintenance();
         UpdateModificationDate();
     }
 
     public void SetInactive()
     {
-        _status = _status.TransitionToInactive();
+        _statusState = _statusState.TransitionToInactive();
         UpdateModificationDate();
     }
-
-    public bool CanBeRemoved() => _status.CanBeRemoved();
-
-    public bool CanBeDeleted(IEnumerable<Rental> rentals) => _status.CanBeDeleted(rentals);
-
-    public MotorcycleDetails Details() => _details;
-    public MotorcycleStatusState Status() => _status;
 
     public MotorcycleRegistered GenerateRegisteredEvent()
     {
@@ -62,4 +56,31 @@ public class Motorcycle : Entity<Guid>
             _details.LicensePlate().ToStringRepresentation()
         );
     }
+
+    public bool CanBeRemoved()
+        => _statusState.CanBeRemoved();
+
+    public string StatusToStringRepresentation()
+        => _statusState.ToStatus().ToString();
+
+    public MotorcycleStatus Status()
+        => _statusState.ToStatus();
+
+    public bool CanBeDeleted(IEnumerable<Rental> rentals)
+        => _statusState.CanBeDeleted(rentals);
+
+    public string LicensePlate()
+        => _details.LicensePlate().ToStringRepresentation();
+
+    public int Year()
+        => _details.Year().ToInt();
+
+    public string Model()
+        => _details.Model().ToStringRepresentation();
+
+    public MotorcycleDetails Details()
+        => _details;
+
+    public MotorcycleStatusState StatusState()
+        => _statusState;
 }

@@ -1,4 +1,4 @@
-﻿namespace Vrumm.Application.Common.Exceptions;
+﻿namespace Vrumm.Domain.Exceptions.Drivers;
 public class InvalidFileTypeException : Exception
 {
     public InvalidFileTypeException(string fileType)

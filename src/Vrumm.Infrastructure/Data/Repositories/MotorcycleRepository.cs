@@ -15,16 +15,14 @@ public class MotorcycleRepository : Repository<Motorcycle, Guid>, IMotorcycleRep
         (string licensePlate, CancellationToken cancellationToken)
     {
         return await _dbSet.AnyAsync(m
-            => m.Details().LicensePlate().ToStringRepresentation()
-            == licensePlate, cancellationToken: cancellationToken);
+            => m.LicensePlate() == licensePlate, cancellationToken: cancellationToken);
     }
 
     public async Task<bool> ExistsByLicensePlateExceptIdAsync
         (LicensePlate licensePlate, Guid id, CancellationToken cancellationToken)
     {
         return await _dbSet.AnyAsync(m
-            => m.Details().LicensePlate().ToStringRepresentation()
-                == licensePlate.ToStringRepresentation()
+            => m.LicensePlate() == licensePlate.ToStringRepresentation()
             && m.Id != id, cancellationToken: cancellationToken);
     }
 
@@ -37,7 +35,7 @@ public class MotorcycleRepository : Repository<Motorcycle, Guid>, IMotorcycleRep
         (MotorcycleStatus status, CancellationToken cancellationToken)
     {
         return await _dbSet.Where(m
-            => m.Status().ToStatus() == status)
+            => m.Status() == status)
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
@@ -45,8 +43,8 @@ public class MotorcycleRepository : Repository<Motorcycle, Guid>, IMotorcycleRep
         (int startYear, int endYear, CancellationToken cancellationToken)
     {
         return await _dbSet.Where(m
-            => m.Details().Year().ToInt() >= startYear
-            && m.Details().Year().ToInt() <= endYear)
+            => m.Year() >= startYear
+            && m.Year() <= endYear)
             .ToListAsync(cancellationToken: cancellationToken);
     }
 }
