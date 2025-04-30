@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
 using Vrumm.Application.Common.Interfaces;
+using Vrumm.Application.Common.Models;
 using Vrumm.Application.Plans;
 using Vrumm.Domain.Entities;
 using Vrumm.Domain.Exceptions.Drivers;

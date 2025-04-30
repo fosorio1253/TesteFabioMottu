@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Vrumm.Api.Models;
 using Vrumm.Api.Models.Motos;
 using Vrumm.Application.Common.Interfaces;
@@ -8,6 +9,7 @@ using Vrumm.Application.Motorcycles.Commands.DeleteMotorcycle;
 using Vrumm.Application.Motorcycles.Commands.UpdateMotorcycle;
 using Vrumm.Application.Motorcycles.Dtos;
 using Vrumm.Application.Motorcycles.Queries.GetMotorcycles;
+using Vrumm.Domain.Entities;
 
 namespace Vrumm.Api.Controllers;
 [ApiController]
@@ -29,6 +31,7 @@ public class MotosController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = UserRole.Admin)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CreateMoto(
@@ -44,6 +47,7 @@ public class MotosController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = UserRole.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<MotoResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IReadOnlyList<MotoResponse>>> GetMotos(
@@ -63,6 +67,7 @@ public class MotosController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = $"{UserRole.Admin},{UserRole.Entregador}")]
     [ProducesResponseType(typeof(MotoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -87,6 +92,7 @@ public class MotosController : ControllerBase
     }
 
     [HttpPut("{id}/placa")]
+    [Authorize(Roles = UserRole.Admin)]
     [ProducesResponseType(typeof(UpdateResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UpdateResponse>> UpdateMotoPlaca(
@@ -103,6 +109,7 @@ public class MotosController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = UserRole.Admin)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]

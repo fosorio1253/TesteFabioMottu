@@ -12,6 +12,7 @@ public class VrummDbContext : DbContext
     public DbSet<Driver> Drivers { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Rental> Rentals { get; set; }
+    public DbSet<User> Users { get; set; }
     public DbSet<MotorcycleRegistrationEvent> MotorcycleRegistrationEvents { get; set; }
 
     public VrummDbContext(DbContextOptions<VrummDbContext> options)

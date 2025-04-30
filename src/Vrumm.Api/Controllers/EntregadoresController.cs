@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Vrumm.Api.Models;
 using Vrumm.Api.Models.Entregador;
 using Vrumm.Application.Common.Interfaces;
 using Vrumm.Application.Drivers.Commands.CreateDriver;
 using Vrumm.Application.Drivers.Commands.UploadLicense;
+using Vrumm.Domain.Entities;
 
 namespace Vrumm.Api.Controllers;
 [ApiController]
@@ -19,6 +21,7 @@ public class EntregadoresController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = UserRole.Admin)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CreateEntregador
@@ -34,6 +37,7 @@ public class EntregadoresController : ControllerBase
     }
 
     [HttpPost("{id}/cnh")]
+    [Authorize(Roles = $"{UserRole.Admin},{UserRole.Entregador}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> UploadCnh(

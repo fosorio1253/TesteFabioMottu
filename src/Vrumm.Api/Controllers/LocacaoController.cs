@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Vrumm.Api.Models;
 using Vrumm.Api.Models.Locacao;
 using Vrumm.Api.Models.Motos;
@@ -8,6 +9,7 @@ using Vrumm.Application.Rentals.Commands.CreateRental;
 using Vrumm.Application.Rentals.Commands.FinalizeRental;
 using Vrumm.Application.Rentals.Dtos;
 using Vrumm.Application.Rentals.Queries.GetRentals;
+using Vrumm.Domain.Entities;
 
 namespace Vrumm.Api.Controllers;
 [ApiController]
@@ -29,6 +31,7 @@ public class LocacaoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = UserRole.Entregador)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CreateLocacao(
@@ -44,6 +47,7 @@ public class LocacaoController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = $"{UserRole.Admin},{UserRole.Entregador}")]
     [ProducesResponseType(typeof(LocacaoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -64,6 +68,7 @@ public class LocacaoController : ControllerBase
     }
 
     [HttpPut("{id}/devolucao")]
+    [Authorize(Roles = $"{UserRole.Admin},{UserRole.Entregador}")]
     [ProducesResponseType(typeof(UpdateResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UpdateResponse>> FinalizeLocacao(
