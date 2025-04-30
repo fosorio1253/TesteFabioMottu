@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Vrumm.Application.Common.Exceptions;
 using Vrumm.Application.Common.Interfaces;
+using Vrumm.Domain.Options;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 using Vrumm.Infrastructure.Storage.Abstractions;
 
@@ -10,24 +10,26 @@ public class UploadLicenseCommandHandler : ICommandHandler<UploadLicenseCommand,
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IStorageService _storageService;
-    private readonly StorageOptions _options;
-    private readonly ILogger<UploadLicenseCommandHandler> _logger;
+    private int _expirationMinutes;
+    private string _bucketName;
 
     public UploadLicenseCommandHandler(
         IUnitOfWork unitOfWork,
         IStorageService storageService,
-        IOptions<StorageOptions> options,
-        ILogger<UploadLicenseCommandHandler> logger)
+        IOptions<GoogleCloudStorageOptions> options)
     {
         _unitOfWork = unitOfWork;
         _storageService = storageService;
-        _options = options.Value ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger;
+        var tmpOptions = options.Value
+            ?? throw new ArgumentNullException(nameof(options));
+        _bucketName = tmpOptions.LicenseBucketName
+            ?? throw new InvalidOperationException("Google Cloud Storage bucket name not configured.");
+        _expirationMinutes = tmpOptions.LicenseSignedUrlExpirationMinutes;
     }
 
     public async Task<string> Handle(UploadLicenseCommand command, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(_options.BucketName))
+        if (string.IsNullOrEmpty(_bucketName))
             throw new InvalidOperationException("Storage bucket name is not configured.");
 
         var driver = await _unitOfWork.Drivers.GetByIdAsync(command.DriverId, cancellationToken)
@@ -35,7 +37,7 @@ public class UploadLicenseCommandHandler : ICommandHandler<UploadLicenseCommand,
 
         var filePath = $"licenses/{command.DriverId}/{Path.GetFileName(command.FileName)}";
         var uniqueFileName = await _storageService.UploadFileAsync(
-            _options.BucketName,
+            _bucketName,
             filePath,
             command.Content,
             command.ContentType,
@@ -46,10 +48,10 @@ public class UploadLicenseCommandHandler : ICommandHandler<UploadLicenseCommand,
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var signedUrl = await _storageService.GetSignedUrlAsync(
-            _options.BucketName,
+            _bucketName,
             uniqueFileName,
             cancellationToken,
-            _options.SignedUrlExpirationMinutes);
+            _expirationMinutes);
 
         return signedUrl;
     }

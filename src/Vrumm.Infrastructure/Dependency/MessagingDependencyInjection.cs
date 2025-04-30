@@ -5,7 +5,8 @@ using Vrumm.Infrastructure.Messaging.PubSub;
 namespace Vrumm.Infrastructure.Dependency;
 public static class MessagingDependencyInjection
 {
-    public static IServiceCollection AddMessagingDependecies(this IServiceCollection services, IHealthChecksBuilder hcBuilder,
+    public static IServiceCollection AddMessagingDependecies
+        (this IServiceCollection services, IHealthChecksBuilder hcBuilder,
         Action<MessagingOptions> configureOptions = null)
     {
         var messagingOptions = new MessagingOptions();

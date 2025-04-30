@@ -3,6 +3,7 @@
 namespace Vrumm.Infrastructure.Data.UnitOfWork;
 public interface IUnitOfWork : IDisposable
 {
+    IUserRepository Users { get; set; }
     IMotorcycleRepository Motorcycles { get; }
     IDriverRepository Drivers { get; }
     IPlanRepository Plans { get; }

@@ -7,13 +7,20 @@ using Vrumm.Application;
 using Vrumm.Application.Auth.Implementations;
 using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Entities;
+using Vrumm.Domain.Options;
 using Vrumm.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+builder.Services.Configure<PerformanceOptions>(builder.Configuration.GetSection(PerformanceOptions.SectionName));
+builder.Services.Configure<GoogleCloudStorageOptions>(builder.Configuration.GetSection(GoogleCloudStorageOptions.SectionName));
+builder.Services.Configure<MotorcycleRegistrationOptions>(builder.Configuration.GetSection(MotorcycleRegistrationOptions.SectionName));
+builder.Services.Configure<PlanOptions>(builder.Configuration.GetSection(PlanOptions.SectionName));
+
 builder.Services.AddControllers();
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddInfrastructure();
 
 builder.Services.AddAuthentication(options =>
 {

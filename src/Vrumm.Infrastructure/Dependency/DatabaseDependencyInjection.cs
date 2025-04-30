@@ -7,7 +7,8 @@ using Vrumm.Infrastructure.Data.Repositories;
 namespace Vrumm.Infrastructure.Dependency;
 public static class DatabaseDependencyInjection
 {
-    public static IServiceCollection AddDatabaseDependecies(this IServiceCollection services, IHealthChecksBuilder hcBuilder,
+    public static IServiceCollection AddDatabaseDependecies
+        (this IServiceCollection services, IHealthChecksBuilder hcBuilder,
         Action<DatabaseOptions> configureOptions = null)
     {
         var dataBaseOptions = new DatabaseOptions();

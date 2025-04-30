@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Vrumm.Application.Common.Behaviors;
 using Vrumm.Application.Common.CommandBus;
 using Vrumm.Application.Common.Dispatching;
@@ -28,17 +29,20 @@ using Vrumm.Application.Rentals.Dtos;
 using Vrumm.Application.Rentals.Events;
 using Vrumm.Application.Rentals.Queries.CalculateReturnValue;
 using Vrumm.Application.Rentals.Queries.GetRentals;
+using Vrumm.Domain.Options;
 
 namespace Vrumm.Application;
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddCommon();
         services.AddMotorcycles();
-        services.AddDrivers();
-        services.AddPlans();
+        services.AddDrivers(configuration);
+        services.AddPlans(configuration);
         services.AddRentals();
+        services.AddJwt(configuration);
+        services.AddPerformance(configuration);
 
         services.AddScoped<ICommandDispatcher, CommandDispatcher>();
         services.AddScoped<IQueryDispatcher, QueryDispatcher>();
@@ -46,12 +50,25 @@ public static class DependencyInjection
         {
             var innerBus = provider.GetRequiredService<CommandBus>();
             return new PerformanceBehavior(innerBus, provider.GetRequiredService<ILogger<PerformanceBehavior>>(),
-                provider.GetRequiredService<IConfiguration>());
+                provider.GetRequiredService<IOptions<PerformanceOptions>>());
         });
 
         return services;
     }
-    
+
+    public static IServiceCollection AddJwt(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.AddScoped<ITokenService, Auth.Implementations.JwtTokenService>();
+        return services;
+    }
+
+    public static IServiceCollection AddPerformance(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<PerformanceOptions>(configuration.GetSection(PerformanceOptions.SectionName));
+        return services;
+    }
+
     public static IServiceCollection AddMotorcycles(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandler<DeleteMotorcycleCommand>, DeleteMotorcycleCommandHandler>();
@@ -73,7 +90,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddDrivers(this IServiceCollection services)
+    public static IServiceCollection AddDrivers(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ICommandHandler<CreateDriverCommand, Guid>, CreateDriverCommandHandler>();
         services.AddScoped<ICommandHandler<UploadLicenseCommand, string>, UploadLicenseCommandHandler>();
@@ -90,17 +107,15 @@ public static class DependencyInjection
         services.AddScoped<IValidator<DeleteDriverCommand>, DeleteDriverCommandValidator>();
         services.AddScoped<IValidator<UploadLicenseCommand>, UploadLicenseCommandValidator>();
 
-        services.Configure<StorageOptions>(services.BuildServiceProvider()
-            .GetRequiredService<IConfiguration>().GetSection("GoogleCloud"));
-
         return services;
     }
-    
+
     public static IServiceCollection AddRentals(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandler<CreateRentalCommand, Guid>, CreateRentalCommandHandler>();
         services.AddScoped<ICommandHandler<FinalizeRentalCommand>, FinalizeRentalCommandHandler>();
         services.AddScoped<IQueryHandler<GetRentalsQuery, PaginatedList<RentalDto>>, GetRentalsQueryHandler>();
+        services.AddScoped<ICommandHandler<CancelRentalCommand>, CancelRentalCommandHandler>();
 
         services.AddScoped<GetRentalsQueryHandler>();
         services.AddScoped<CalculateReturnValueQueryHandler>();
@@ -119,8 +134,9 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddPlans(this IServiceCollection services)
+    public static IServiceCollection AddPlans(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<PlanOptions>(configuration.GetSection(PlanOptions.SectionName));
         services.AddSingleton<IPlanFactory, PlanFactory>();
         services.AddScoped<GetPlansQueryHandler>();
         return services;

@@ -26,7 +26,7 @@ public class UserService : IUserService
         var methodName = nameof(GetByIdAsync);
         _logger.LogInformation("[{MethodName}] Getting user by id: {UserId}", methodName, id);
 
-        return await _dbContext.Users.FindAsync(new object[] { id }, cancellationToken);
+        return await _dbContext.Users.GetByIdAsync(id , cancellationToken);
     }
 
     public async Task<User> GetByUsernameAsync(string username, CancellationToken cancellationToken)
@@ -34,10 +34,9 @@ public class UserService : IUserService
         var methodName = nameof(GetByUsernameAsync);
         _logger.LogInformation("[{MethodName}] Getting user by username: {Username}", methodName, username);
 
-        // In a real implementation, you'd likely use EF Core with FirstOrDefaultAsync
-        // This is a simplified version
-        var user = await Task.FromResult(_dbContext.Users
-            .FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)));
+        var queryUser = await _dbContext.Users.GetQueryAsync();
+        var user = queryUser.FirstOrDefault(u 
+            => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
 
         return user;
     }
@@ -47,10 +46,8 @@ public class UserService : IUserService
         var methodName = nameof(CreateUserAsync);
         _logger.LogInformation("[{MethodName}] Creating new user: {Username}", methodName, user.Username);
 
-        // Hash the password before storing
         var passwordHash = _passwordHasher.HashPassword(user, password);
 
-        // Create a new user object with the hashed password
         var newUser = new User(
             user.Id,
             user.Username,
@@ -58,7 +55,7 @@ public class UserService : IUserService
             user.Email,
             user.Roles);
 
-        _dbContext.Users.Add(newUser);
+        await _dbContext.Users.AddAsync(newUser, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("[{MethodName}] User created successfully: {UserId}", methodName, newUser.Id);

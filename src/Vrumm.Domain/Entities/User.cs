@@ -1,12 +1,12 @@
-﻿namespace Vrumm.Domain.Entities;
-public class User
+﻿using Vrumm.Domain.Common;
+
+namespace Vrumm.Domain.Entities;
+public class User : Entity<Guid>
 {
-    public Guid Id { get; private set; }
     public string Username { get; private set; }
     public string PasswordHash { get; private set; }
     public string Email { get; private set; }
     public List<string> Roles { get; private set; }
-    public DateTime CreatedAt { get; private set; }
     public DateTime? LastLogin { get; private set; }
 
     private User() { }
@@ -18,7 +18,7 @@ public class User
         PasswordHash = passwordHash;
         Email = email;
         Roles = roles;
-        CreatedAt = DateTime.UtcNow;
+        CreationDate = DateTime.UtcNow;
     }
 
     public void UpdateLastLogin()

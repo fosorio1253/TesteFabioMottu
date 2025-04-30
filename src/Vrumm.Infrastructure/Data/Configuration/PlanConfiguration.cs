@@ -1,16 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Options;
 using Vrumm.Domain.Entities;
-using Microsoft.Extensions.Configuration;
+using Vrumm.Domain.Options;
 
 namespace Vrumm.Infrastructure.Data.Configuration;
 public class PlanConfiguration : IEntityTypeConfiguration<Plan>
 {
-    private readonly IConfiguration _configuration;
+    private readonly PlanOptions _planOptions;
 
-    public PlanConfiguration(IConfiguration configuration)
+    public PlanConfiguration(IOptions<PlanOptions> planOptions)
     {
-        _configuration = configuration;
+        _planOptions = planOptions.Value ?? throw new ArgumentNullException(nameof(planOptions));
     }
 
     public void Configure(EntityTypeBuilder<Plan> builder)
@@ -21,26 +22,17 @@ public class PlanConfiguration : IEntityTypeConfiguration<Plan>
         builder.Property(p => p.PenaltyPercentage).HasPrecision(18, 2).IsRequired();
         builder.Property(p => p.AdditionalDayRate).HasPrecision(18, 2).IsRequired();
 
-        var plans = _configuration.GetSection("Plans").Get<List<PlanConfig>>();
-        if (plans == null || !plans.Any())
+        if (_planOptions.Configurations == null || !_planOptions.Configurations.Any())
         {
             throw new InvalidOperationException("No plans configured in appsettings.json.");
         }
 
-        builder.HasData(plans.Select((p, index) => new Plan(
+        builder.HasData(_planOptions.Configurations.Select((p, index) => new Plan(
             index + 1,
             p.DayCount,
             p.DailyRate,
             p.PenaltyPercentage,
             p.AdditionalDayRate
         )));
-    }
-
-    private class PlanConfig
-    {
-        public int DayCount { get; set; }
-        public decimal DailyRate { get; set; }
-        public decimal PenaltyPercentage { get; set; }
-        public decimal AdditionalDayRate { get; set; }
     }
 }

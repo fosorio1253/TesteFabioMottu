@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Vrumm.Domain.Entities;
 using Vrumm.Domain.Repositories;
 using Vrumm.Infrastructure.Data.Context;
 
@@ -9,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     private IDbContextTransaction _transaction;
     private bool _disposed = false;
 
+    public IUserRepository Users { get; set; }
     public IMotorcycleRepository Motorcycles { get; }
     public IDriverRepository Drivers { get; }
     public IPlanRepository Plans { get; }

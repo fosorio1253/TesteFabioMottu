@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Vrumm.Application.Common.Exceptions;
 using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Common;
 using Vrumm.Domain.Entities.DriverCompose;
 using Vrumm.Domain.Exceptions;
+using Vrumm.Domain.Options;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 using Vrumm.Infrastructure.Storage.Abstractions;
 
@@ -17,7 +18,7 @@ public class CreateDriverCommandHandler : ICommandHandler<CreateDriverCommand, G
     private readonly ILogger<CreateDriverCommandHandler> _logger;
 
     public CreateDriverCommandHandler(
-        IConfiguration configuration,
+        IOptions<GoogleCloudStorageOptions> storageOptions,
         IUnitOfWork unitOfWork,
         IStorageService storageService,
         ILogger<CreateDriverCommandHandler> logger)
@@ -25,7 +26,7 @@ public class CreateDriverCommandHandler : ICommandHandler<CreateDriverCommand, G
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _bucketName = configuration["GoogleCloud:BucketName"]
+        _bucketName = storageOptions.Value?.LicenseBucketName
             ?? throw new InvalidOperationException("Google Cloud Storage bucket name not configured.");
     }
 

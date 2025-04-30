@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Vrumm.Application.Common.Exceptions;
+using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Common.Enums;
 using Vrumm.Domain.Exceptions;
 using Vrumm.Infrastructure.Data.UnitOfWork;
 
 namespace Vrumm.Application.Rentals.Commands.CancelRental;
-public class CancelRentalCommandHandler
+public class CancelRentalCommandHandler : ICommandHandler<CancelRentalCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CancelRentalCommandHandler> _logger;

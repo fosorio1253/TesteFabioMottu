@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Vrumm.Application.Common.Interfaces;
+using Vrumm.Domain.Options;
 
 namespace Vrumm.Application.Common.Behaviors;
 public class PerformanceBehavior : ICommandBus
@@ -14,12 +15,12 @@ public class PerformanceBehavior : ICommandBus
     public PerformanceBehavior(
         ICommandBus next,
         ILogger<PerformanceBehavior> logger,
-        IConfiguration configuration)
+        IOptions<PerformanceOptions> performanceOptions)
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _stopwatch = new Stopwatch();
-        _performanceThresholdMs = configuration.GetValue<int>("Performance:ThresholdMs", 500);
+        _performanceThresholdMs = performanceOptions.Value?.ThresholdMs ?? 500;
     }
 
 

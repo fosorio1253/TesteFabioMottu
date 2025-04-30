@@ -1,23 +1,24 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Vrumm.Application.Common.Interfaces;
 using Vrumm.Domain.Entities;
+using Vrumm.Domain.Options;
 
 namespace Vrumm.Application.Auth.Implementations;
 public class JwtTokenService : ITokenService
 {
-    private readonly IConfiguration _configuration;
+    private readonly JwtOptions _jwtOptions;
     private readonly ILogger<JwtTokenService> _logger;
 
     public JwtTokenService(
-        IConfiguration configuration,
+        IOptions<JwtOptions> jwtOptions,
         ILogger<JwtTokenService> logger)
     {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _jwtOptions = jwtOptions.Value ?? throw new ArgumentNullException(nameof(jwtOptions));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -26,16 +27,16 @@ public class JwtTokenService : ITokenService
         var methodName = nameof(GenerateTokenAsync);
         _logger.LogInformation("[{MethodName}] Generating token for user: {UserId}", methodName, user.Id);
 
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var claims = GetUserClaims(user);
 
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
+            issuer: _jwtOptions.Issuer,
+            audience: _jwtOptions.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(double.Parse(_configuration["Jwt:ExpiryInHours"])),
+            expires: DateTime.UtcNow.AddHours(_jwtOptions.ExpiryInHours),
             signingCredentials: credentials);
 
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
@@ -90,9 +91,9 @@ public class JwtTokenService : ITokenService
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = _configuration["Jwt:Issuer"],
-            ValidAudience = _configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]))
+            ValidIssuer = _jwtOptions.Issuer,
+            ValidAudience = _jwtOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key))
         };
     }
 }
