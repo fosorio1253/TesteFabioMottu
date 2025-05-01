@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Vrumm.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1050c5515fd7f0b5b7361730ae930058da47a28c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fea645100e19a61cfec3dc9765e307ddba254244")]
 [assembly: System.Reflection.AssemblyProductAttribute("Vrumm.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Vrumm.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

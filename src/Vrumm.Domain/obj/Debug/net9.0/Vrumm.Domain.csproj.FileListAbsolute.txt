@@ -1,0 +1,12 @@
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\bin\Debug\net9.0\Vrumm.Domain.deps.json
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\bin\Debug\net9.0\Vrumm.Domain.dll
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\bin\Debug\net9.0\Vrumm.Domain.pdb
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\Vrumm.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\Vrumm.Domain.AssemblyInfoInputs.cache
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\Vrumm.Domain.AssemblyInfo.cs
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\Vrumm.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\Vrumm.Domain.sourcelink.json
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\Vrumm.Domain.dll
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\refint\Vrumm.Domain.dll
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\Vrumm.Domain.pdb
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Domain\obj\Debug\net9.0\ref\Vrumm.Domain.dll

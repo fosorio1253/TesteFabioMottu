@@ -1,0 +1,16 @@
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\bin\Debug\net9.0\Vrumm.Infrastructure.deps.json
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\bin\Debug\net9.0\Vrumm.Infrastructure.dll
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\bin\Debug\net9.0\Vrumm.Infrastructure.pdb
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\bin\Debug\net9.0\Vrumm.Domain.dll
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\bin\Debug\net9.0\Vrumm.Domain.pdb
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.Infrastructure.AssemblyInfo.cs
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.Infrastructure.sourcelink.json
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.In.1BACD0DD.Up2Date
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.Infrastructure.dll
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\refint\Vrumm.Infrastructure.dll
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\Vrumm.Infrastructure.pdb
+C:\Users\Fosorio\source\repos\fosorio1253\TesteFabioMottu\src\Vrumm.Infrastructure\obj\Debug\net9.0\ref\Vrumm.Infrastructure.dll
