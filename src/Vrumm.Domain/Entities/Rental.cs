@@ -20,7 +20,12 @@ public class Rental : Entity<Guid>
 
     private Rental() { }
 
-    public Rental(Guid motorcycleId, Guid driverId, int planId, DateTime startDate, DateTime expectedEndDate)
+    public Rental(
+        Guid motorcycleId,
+        Guid driverId,
+        int planId,
+        DateTime startDate,
+        DateTime expectedEndDate)
     {
         if (motorcycleId == Guid.Empty)
             throw new DomainException("ID da moto inválido");

@@ -24,9 +24,8 @@ public class DeleteDriverCommandHandler : ICommandHandler<DeleteDriverCommand>
 
         var driver = await _unitOfWork.Drivers.GetByIdAsync(command.Id, cancellationToken)
             ?? throw new NotFoundException("Entregador", command.Id);
-
-        var activeRentals = await _unitOfWork.Rentals.GetByDriverIdAsync(command.Id, cancellationToken);
-        if (activeRentals.Any(r => r.Status == Domain.Common.Enums.RentalStatus.Active))
+        
+        if (!await _unitOfWork.Rentals.HasActiveRentalForDriverAsync(command.Id, cancellationToken))
             throw new DomainException("Não é possível excluir um entregador com locações ativas.");
 
         await _unitOfWork.Drivers.RemoveAsync(driver);

@@ -1,6 +1,7 @@
 ﻿using Vrumm.Domain.Common;
 
-namespace Vrumm.Domain.Entities.MotorcycleCompose; public class MotorcycleRegistrationEvent : Entity<Guid>
+namespace Vrumm.Domain.Entities.MotorcycleCompose;
+public class MotorcycleRegistrationEvent : Entity<Guid>
 {
     public Guid MotorcycleId { get; private set; }
     public int Year { get; private set; }

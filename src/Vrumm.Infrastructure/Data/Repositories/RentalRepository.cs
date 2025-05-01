@@ -54,4 +54,9 @@ public class RentalRepository : Repository<Rental, Guid>, IRentalRepository
     {
         return _dbSet.AsQueryable<Rental>();
     }
+
+    public async Task<bool> HasActiveRentalForDriverAsync(Guid driverId, CancellationToken cancellationToken)
+    {
+        return await _dbSet.AnyAsync(r => r.DriverId == driverId && r.Status == RentalStatus.Active, cancellationToken: cancellationToken);
+    }
 }

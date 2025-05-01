@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Vrumm.Domain.Entities.MotorcycleCompose;
 using Vrumm.Domain.Repositories;
 using Vrumm.Infrastructure.Data.Context;
@@ -37,5 +38,35 @@ public class MotorcycleRegistrationEventRepository : IMotorcycleRegistrationEven
             .Where(e => e.Year == year)
             .OrderByDescending(e => e.EventTimestamp)
             .ToListAsync(cancellationToken);
+    }
+
+    public Task<MotorcycleRegistrationEvent> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<MotorcycleRegistrationEvent>> FindAsync(Expression<Func<MotorcycleRegistrationEvent, bool>> predicate, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> ExistsAsync(Expression<Func<MotorcycleRegistrationEvent, bool>> predicate, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(MotorcycleRegistrationEvent entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task RemoveAsync(MotorcycleRegistrationEvent entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IQueryable<MotorcycleRegistrationEvent>> GetQueryAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

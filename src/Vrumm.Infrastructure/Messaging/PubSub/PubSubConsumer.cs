@@ -16,8 +16,9 @@ public class PubSubConsumer : IMessageConsumer, IHostedService
     private CancellationTokenSource _cancellationTokenSource;
     private readonly Dictionary<string, Delegate> _handlers = new Dictionary<string, Delegate>();
 
-    public PubSubConsumer(IOptions<GoogleCloudOptions> options, ILogger<PubSubConsumer> logger, string subscriptionId)
+    public PubSubConsumer(IOptions<GoogleCloudOptions> options, ILogger<PubSubConsumer> logger)
     {
+        var subscriptionId = options.Value?.ProjectId;
         _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         if (string.IsNullOrEmpty(subscriptionId))
