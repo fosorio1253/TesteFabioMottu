@@ -13,9 +13,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vrumm.Api", "src\Vrumm.Api\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{1B35D3A6-564A-4898-8C37-9A16DA7E700E}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
 		.gitignore = .gitignore
+		docker-compose = docker-compose
+		Dockerfile = Dockerfile
+		Documentação Técnica - Sistema Vrumm.md = Documentação Técnica - Sistema Vrumm.md
+		Documentação Técnica – Camada API.md = Documentação Técnica – Camada API.md
+		Documentação Técnica – Camada Application.md = Documentação Técnica – Camada Application.md
+		Documentação Técnica – Camada de Testes de Integração.md = Documentação Técnica – Camada de Testes de Integração.md
+		Documentação Técnica – Camada de Testes Unitários.md = Documentação Técnica – Camada de Testes Unitários.md
+		Documentação Técnica – Camada Domain.md = Documentação Técnica – Camada Domain.md
+		Documentação Técnica – Camada Infrastructure.md = Documentação Técnica – Camada Infrastructure.md
 		README.md = README.md
-		sistem_architecture.md = sistem_architecture.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"

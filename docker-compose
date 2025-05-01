@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/Vrumm.Api/Dockerfile
+    container_name: vrumm_api
+    ports:
+      - "5013:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # --- Configuração do Banco de Dados ---
+      - ConnectionStrings__Default=Host=postgres;Database=${POSTGRES_DB:-vrumm};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-example}
+      # --- Configuração JWT (Exemplo) ---
+      - Jwt__Key=${JWT_KEY:-YourSuperSecretKeyThatIsLongEnough} # Idealmente viria do .env
+      - Jwt__Issuer=VrummLocalIssuer
+      - Jwt__Audience=VrummLocalAudience
+      # --- Configuração Google Cloud Storage (Apontando para MinIO) ---
+      - GoogleCloudStorageOptions__ProjectId=local-project # GCS real precisa de um project ID, mas para MinIO pode ser qualquer coisa
+      - GoogleCloudStorageOptions__BucketName=${MINIO_BUCKET:-vrumm-local-bucket}
+      # !! Importante: Adicionar configuração na sua app para usar um endpoint customizado se não houver !!
+      # Se sua IStorageService não pega endpoint da config, precisaria ajustar a implementação ou usar variáveis específicas do SDK
+      # Exemplo Hipotético de variável de endpoint (verificar qual sua app usa):
+      - GCS_EMULATOR_HOST=http://minio:9000
+      - GCS_ACCESS_KEY=${MINIO_ROOT_USER:-minioadmin}   # Exemplo, ajuste conforme sua app lê
+      - GCS_SECRET_KEY=${MINIO_ROOT_PASSWORD:-minioadmin} # Exemplo, ajuste conforme sua app lê
+      # --- Configuração Pub/Sub (Apontando para Emulador) ---
+      - GoogleCloudOptions__ProjectId=local-project # Para emulador, pode ser fictício
+      # Variável de ambiente padrão que o SDK do Google Cloud busca para o emulador:
+      - PUBSUB_EMULATOR_HOST=pubsub-emulator:8085
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio: # Depende do MinIO estar pronto (healthcheck simples)
+        condition: service_started # Ou service_healthy se adicionar healthcheck no minio
+      pubsub-emulator: # Depende do PubSub estar pronto (healthcheck simples)
+        condition: service_started # Ou service_healthy se adicionar healthcheck no pubsub
+    networks:
+      - vrumm_network
+    restart: unless-stopped
+
+  postgres:
+    # ... (configuração do postgres como antes, com healthcheck) ...
+    networks:
+      - vrumm_network
+    restart: unless-stopped
+    # ... (resto igual)
+
+  minio:
+    image: minio/minio:latest
+    container_name: vrumm_minio
+    ports:
+      - "9000:9000" # API Port
+      - "9001:9001" # Console Port
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin} # Use .env ou defina aqui
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin} # Use .env ou defina aqui
+    volumes:
+      - miniodata:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - vrumm_network
+    restart: unless-stopped
+    # Healthcheck opcional para MinIO pode ser adicionado aqui
+
+  pubsub-emulator:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators
+    container_name: vrumm_pubsub_emulator
+    ports:
+      - "8085:8085"
+    command: gcloud beta emulators pubsub start --project=local-project --host-port=0.0.0.0:8085
+    networks:
+      - vrumm_network
+    restart: unless-stopped
+    # Healthcheck opcional para PubSub emulator pode ser adicionado aqui
+
+
+volumes:
+  pgdata:
+  miniodata:
+
+networks:
+  vrumm_network:
+    driver: bridge
